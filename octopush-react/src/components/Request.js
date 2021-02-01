@@ -19,27 +19,27 @@ const Request = () => {
         receiverLat: '',
         receiverLng: ''
     })
-    const [results, setResults] = useState([])
+    const [results, setResults] = useState({})
 
 
-    const onInputChange = (event) => {      
+    const onInputChange = (event) => {     
         setRequestForm(
-            {...requestForm,[event.target.name]: event.target.value}
+            {...requestForm,
+                [event.target.name]: event.target.value,
+                receiverLat: results.lat,
+                receiverLng: results.lng
+            }
         )
     }
 
     const onFormSubmit = (e) => {
         e.preventDefault()
-        setRequestForm({ receiverLat: results.lat, receiverLng: results.lng })
-        console.log(results)
-        console.log(requestForm)
+
         axios.post(
             'http://localhost:5000/api/v1/newrequest', 
             qs.stringify({requestForm})
         )
     }
-
-    
 
     useEffect(() => {
         const search = async (postcode) => {
@@ -53,9 +53,16 @@ const Request = () => {
             setResults(data.results[0].geometry.location)
         }
         
-        if (requestForm.receiverPostcode){
-            search(requestForm.receiverPostcode)
-        }       
+        const timeoutId = setTimeout(() => {
+            if (requestForm.receiverPostcode){
+                search(requestForm.receiverPostcode)
+            } 
+        }, 1000);
+
+        return () => {
+            clearTimeout(timeoutId)
+        }
+              
     }, [requestForm.receiverPostcode])
 
     return (
