@@ -48,8 +48,8 @@ class App extends React.Component {
           {this.state.phase === 1 && <>
             {this.state.dropDownType.length > 0 && this.state.dropDownType.map(x => {
               return (
-                <Segment class="ui top aligned">{x.label}
-                  <button onClick={() => this.openActiveCluster(x.label)} class="ui right floated button"><Icon name="angle double right" /></button> </Segment>
+                <Segment className="ui top aligned">{x.label}
+                  <button onClick={() => this.openActiveCluster(x.label)} className="ui right floated button"><Icon name="angle double right" /></button> </Segment>
               )
             })}</>
           }
@@ -63,10 +63,10 @@ class App extends React.Component {
               {this.state.activeCluster}
               {this.state.activeClusterData.length > 0 && this.state.activeClusterData.map(x => {
                 return (
-                  <Segment class="ui top aligned">{x.blockName}
+                  <Segment className="ui top aligned">{x.blockName}
                     <br />
                     {`${x.jobs} jobs in it`}
-                    <button class="ui right floated button"><Icon name="angle double right" /></button> </Segment>
+                    <button className="ui right floated button"><Icon name="angle double right" /></button> </Segment>
                 )
               })}
             </>
