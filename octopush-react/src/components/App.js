@@ -2,7 +2,8 @@ import React from 'react';
 import Request from './Request';
 import Driver from './Driver';
 import Route from './Route';
-import Main from './Main'
+import Main from './Main';
+import Register from './auth/Register';
 
 
 const App = () => {
@@ -17,6 +18,10 @@ const App = () => {
 
             <Route path="/driver">
                 <Driver />
+            </Route>
+
+            <Route path="/register">
+                <Register />
             </Route>
         </div>
     )
