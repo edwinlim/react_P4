@@ -4,6 +4,7 @@ import Driver from './Driver';
 import Route from './Route';
 import Main from './Main';
 import Register from './auth/Register';
+import '../App.css';
 
 
 const App = () => {
