@@ -20,13 +20,13 @@ class Driver extends React.Component {
             online: false,
             notActionReasons: [
                 {
-                    label: "Customer Not At Home"
+                    label: "Not Contactable"
                 },
                 {
-                    label: "Customer Address Not Correct"
+                    label: "Incorrect Address"
                 },
                 {
-                    label: "Customer Not Reachable"
+                    label: "Requested Another Time"
                 }
             ],
             deliveryType: null
@@ -163,11 +163,11 @@ class Driver extends React.Component {
                                     <button onClick={() => this.openActiveCluster(x.label)} className="ui right floated button"><Icon name="angle double right" /></button> </Segment>
 
                             )
-                        })}<Button onClick={() => {
+                        })}<div><Button id="powerButton" onClick={() => {
                             if (this.state.online === true) {
                                 return this.setState({ online: false })
                             } else return this.setState({ online: true })
-                        }} className="ui center aligned" basic color={this.state.online === true ? 'green' : 'red'}><Icon class="center aligned" name="power" /></Button></>
+                        }} className="ui right aligned" basic color={this.state.online === true ? 'green' : 'red'}><Icon id="powerButtonIcon" class="center aligned" name="power" /></Button></div></>
                     }
                     {
                         this.state.phase === 2 && <>
@@ -186,6 +186,11 @@ class Driver extends React.Component {
                                         <button onClick={() => this.openActiveBlock(x.blockName)} className="ui right floated button"><Icon name="angle double right" /></button> </Segment>
                                 )
                             })}
+                            <Button id="powerButton" onClick={() => {
+                                if (this.state.online === true) {
+                                    return this.setState({ online: false })
+                                } else return this.setState({ online: true })
+                            }} className="ui center aligned" basic color={this.state.online === true ? 'green' : 'red'}><Icon id="powerButtonIcon" class="center aligned" name="power" /></Button>
                         </>
                     }
                     {
@@ -227,7 +232,7 @@ class Driver extends React.Component {
                                                     <Button color='red' onClick={() => this.handleStateChange('setOTPModalOpen', false)}>
                                                         cancel
         </Button>
-                                                    {this.state.type && this.state.type.match(/delivery/gi) && <Button color='green' onClick={() => this.submitOTP()}>
+                                                    {this.state.type && this.state.type.match(/delivery/gi) && <Button color='blue' onClick={() => this.submitOTP()}>
                                                         Submit
         </Button>}
                                                 </Modal.Actions>
@@ -257,12 +262,8 @@ class Driver extends React.Component {
                                                         Cancel
         </Button>
                                                     <Button
-                                                        content="Yep, that's me"
-                                                        labelPosition='right'
-                                                        icon='checkmark'
-                                                        onClick={() => this.submitReason()}
-                                                        positive
-                                                    />
+                                                        color='blue'
+                                                        onClick={() => this.submitReason()}> Submit </Button>
                                                 </Modal.Actions>
                                             </Modal>
                                         </>
