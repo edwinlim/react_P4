@@ -37,6 +37,12 @@
   }
 }
 
-/* .front {
-  float: right;
-} */
+#powerButtonIcon {
+  margin: 0px;
+}
+
+#powerButton {
+  border-radius: 50%;
+  padding: 15px;
+  margin: 0;
+}
