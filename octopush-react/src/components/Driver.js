@@ -2,6 +2,8 @@ import React from "react";
 import { Grid, Icon, Segment, Button, Image, Header, Modal } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css'
 import { getApiUrl, postHttpRequest, removeDuplicatesFromList } from "../utility"
+import toastr from 'toastr';
+import 'toastr/build/toastr.min.css';
 
 class Driver extends React.Component {
     constructor(props) {
@@ -16,7 +18,6 @@ class Driver extends React.Component {
             activeBlockData: [],
             setOTPModalOpen: false,
             opt: "",
-            online: false,
             notActionReasons: [
                 {
                     label: "Not Contactable"
@@ -48,6 +49,8 @@ class Driver extends React.Component {
                 if (res.status && res.data && res.data.length > 0) {
                     this.setState({
                         dropDownType: removeDuplicatesFromList(res.data).map(x => { return { label: x } })
+                    }, () => {
+                        this.fetchLatestUserdata()
                     })
                 }
             })
@@ -65,7 +68,6 @@ class Driver extends React.Component {
                     activeClusterData: []
                 }
                 if (res.status && res.data) {
-                    console.log(res.data)
                     let allData = []
                     Object.keys(res.data).forEach(x => {
                         allData.push({
@@ -91,7 +93,7 @@ class Driver extends React.Component {
                 let dataToSet = {
                     activeBlockLabel: elem.blockName,
                     phase: 3,
-                    activeBlockData: []
+                    activeBlockData: [],
                 }
                 if (res.status && res.data && res.data.length) {
                     dataToSet['activeBlockData'] = res.data.map(x => {
@@ -139,13 +141,23 @@ class Driver extends React.Component {
         })
     }
 
-    submitReason = () => {
+    submitReason = (job) => {
         if (!this.state.reason) {
             return false
         }
-        this.setState({
-            setOtherActionsModalOpen: false
+        postHttpRequest(getApiUrl('unsuccessfulDelivery', 'api/v1/'), {
+            request_id: job.jobId,
+            reason: this.state.reason
         })
+            .then(res => {
+                if (res.status) {
+                    this.setState({
+                        setOtherActionsModalOpen: false
+                    }, () => {
+                        this.getLatestJobs()
+                    })
+                }
+            })
     }
 
     openPopupForOtp = (type) => {
@@ -153,6 +165,60 @@ class Driver extends React.Component {
             type: type,
             setOTPModalOpen: true
         })
+    }
+
+    getLatestJobs = () => {
+        postHttpRequest(getApiUrl('getBlockName', 'api/v1/'), {
+            tour_id: this.state.activeCluster
+        })
+            .then(res => {
+                if (res['status']) {
+                    if (res['data'] && res['data'][this.state.activeBlockLabel]) {
+                        this.openActiveBlock({
+                            blockName: this.state.activeBlockLabel,
+                            otherData: res['data'][this.state.activeBlockLabel]
+                        })
+                    } else {
+                        this.openActiveCluster(this.state.activeCluster)
+                    }
+                }
+            })
+    }
+
+    markAvailable = () => {
+        // function to mark availability
+        postHttpRequest(getApiUrl('availability', 'api/v1/'), {
+            availability: !this.state.userData['availability'],
+            driverID: this.state.userData["user_id"]
+        })
+            .then(res => {
+                if (res.status) {
+                    if (!this.state.userData['availability']) {
+                        toastr.success("You are online")
+                    } else {
+                        toastr.error("You are offline")
+                    }
+                    this.setState({
+                        userData: {
+                            ...this.state.userData,
+                            availability: !this.state.userData['availability']
+                        }
+                    }, () => {
+                        this.fetchLatestUserdata()
+                    })
+                }
+            })
+    }
+
+    fetchLatestUserdata = () => {
+        postHttpRequest(getApiUrl('getDriverDetails', 'api/v1/'), {
+            driverID: this.state.userData["user_id"]
+        })
+            .then(res => {
+                if (res.status) {
+                    this.setState({ userData: res.data })
+                }
+            })
     }
 
     render() {
@@ -166,11 +232,7 @@ class Driver extends React.Component {
                                     <button onClick={() => this.openActiveCluster(x.label)} className="ui right floated button"><Icon name="angle double right" /></button> </Segment>
 
                             )
-                        })}<div><Button id="powerButton" onClick={() => {
-                            if (this.state.online === true) {
-                                return this.setState({ online: false })
-                            } else return this.setState({ online: true })
-                        }} className="ui right aligned" basic color={this.state.online === true ? 'green' : 'red'}><Icon id="powerButtonIcon" class="center aligned" name="power" /></Button></div></>
+                        })}<div><Button id="powerButton" onClick={() => this.markAvailable()} className="ui right aligned" basic color={this.state.userData['availability'] === true ? 'green' : 'red'}><Icon id="powerButtonIcon" class="center aligned" name="power" /></Button></div></>
                     }
                     {
                         this.state.phase === 2 && <>
@@ -266,7 +328,7 @@ class Driver extends React.Component {
         </Button>
                                                     <Button
                                                         color='blue'
-                                                        onClick={() => this.submitReason()}> Submit </Button>
+                                                        onClick={() => this.submitReason(x)}> Submit </Button>
                                                 </Modal.Actions>
                                             </Modal>
                                         </>
