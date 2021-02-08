@@ -1,8 +1,7 @@
 import React from "react";
 import { Grid, Icon, Segment, Button, Image, Header, Modal } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css'
-
-
+import { getApiUrl, postHttpRequest, removeDuplicatesFromList } from "../utility"
 
 class Driver extends React.Component {
     constructor(props) {
@@ -29,87 +28,91 @@ class Driver extends React.Component {
                     label: "Requested Another Time"
                 }
             ],
-            deliveryType: null
+            deliveryType: null,
+            isLogin: true,
+            userData: {
+                user_id: 1
+            },
+            tempTourData: []
         }
     }
 
 
     componentDidMount() {
         //network call their to fetch dropdown types
-        setTimeout(() => {
-            this.setState({
-                dropDownType: [{ label: "North Cluster" }, { label: "South Cluster" },
-                { label: "East Cluster" }, { label: "West Cluster" }]
+        // this postRequest gets the url and return some data
+        postHttpRequest(getApiUrl('getClusterName', 'api/v1/'), {
+            driverID: this.state.userData['user_id']
+        })
+            .then(res => {
+                if (res.status && res.data && res.data.length > 0) {
+                    this.setState({
+                        dropDownType: removeDuplicatesFromList(res.data).map(x => { return { label: x } })
+                    })
+                }
             })
-        }, 500)
     }
 
     openActiveCluster = (label) => {
-        this.setState({
-            activeCluster: label,
-            phase: 2,
-            activeClusterData: [
-                {
-                    blockName: "Estate 1",
-                    jobs: 10,
-                    latLng: "1.4306034,103.8250484"
-                },
-                {
-                    blockName: "Estate 2",
-                    jobs: 21,
-                    latLng: "1.4306034,103.8250484"
-                },
-                {
-                    blockName: "Estate 3",
-                    jobs: 5,
-                    latLng: "13.212,1212"
-                }
-            ]
+        // fetch blocks based on cluster (the one on which user has clicked)
+        postHttpRequest(getApiUrl('getBlockName', 'api/v1/'), {
+            tour_id: label
         })
+            .then(res => {
+                let dataToSet = {
+                    activeCluster: label,
+                    phase: 2,
+                    activeClusterData: []
+                }
+                if (res.status && res.data) {
+                    console.log(res.data)
+                    let allData = []
+                    Object.keys(res.data).forEach(x => {
+                        allData.push({
+                            blockName: x,
+                            jobs: res.data[x].length,
+                            latLng: res.data[x].length ? res.data[x][0]['receiver_lat'] + "," + res.data[x][0]['receiver_long'] : "",
+                            otherData: res.data[x]
+                        })
+                    })
+                    dataToSet['activeClusterData'] = allData
+                    dataToSet['tempTourData'] = res['tempData']
+                }
+                this.setState(dataToSet)
+            })
     }
 
-    openActiveBlock = (label, elem) => {
-        this.setState({
-            activeBlockLabel: label,
-            phase: 3,
-            activeBlockData: [
-                {
-                    address: "Singapore",
-                    latLng: "13.212,1212",
-                    jobId: "",
-                    phoneNumber: "",
-                    type: "Pickup"
-                },
-                {
-                    address: "Singapore1",
-                    latLng: "13.112,1212",
-                    jobId: "",
-                    phoneNumber: "",
-                    type: "Pickup"
-                },
-                {
-                    address: "Singapore2",
-                    latLng: "13.22,1212",
-                    jobId: "",
-                    phoneNumber: "",
-                    type: "Delivery"
-                },
-                {
-                    address: "Singapore2",
-                    latLng: "13.22,1212",
-                    jobId: "",
-                    phoneNumber: "",
-                    type: "Delivery"
-                },
-                {
-                    address: "Singapore2",
-                    latLng: "13.22,1212",
-                    jobId: "",
-                    phoneNumber: "",
-                    type: "Delivery"
-                }
-            ]
+    openActiveBlock = (elem) => {
+        // fetch jobs based on a block name
+        postHttpRequest(getApiUrl('getJobBasedOnBlock', 'api/v1/'), {
+            request_id: elem.otherData.map(x => x["id"])
         })
+            .then(res => {
+                let dataToSet = {
+                    activeBlockLabel: elem.blockName,
+                    phase: 3,
+                    activeBlockData: []
+                }
+                if (res.status && res.data && res.data.length) {
+                    dataToSet['activeBlockData'] = res.data.map(x => {
+                        let newNameToDisplay = x['receiver_block_num']
+                        if (x['receiver_road_name']) {
+                            newNameToDisplay += x['receiver_road_name']
+                        }
+                        if (x['receiver_unit_number']) {
+                            newNameToDisplay += x['receiver_unit_number']
+                        }
+                        return {
+                            address: newNameToDisplay,
+                            latLng: x['receiver_lat'] + "," + x['receiver_long'],
+                            jobId: x['id'],
+                            phoneNumber: x['receiver_contact'],
+                            type: this.state.tempTourData.find(y => y['request_id'] === x['id'])['request_type']
+                        }
+                    })
+                }
+                this.setState(dataToSet)
+            })
     }
 
     handleStateChange = (type, value) => {
@@ -183,7 +186,7 @@ class Driver extends React.Component {
                                         <a target="__blank" href={`https://maps.google.com/maps?q=${x.latLng}`}>{x.blockName}</a>
                                         <br />
                                         {`${x.jobs} jobs in it`}
-                                        <button onClick={() => this.openActiveBlock(x.blockName)} className="ui right floated button"><Icon name="angle double right" /></button> </Segment>
+                                        <button onClick={() => this.openActiveBlock(x)} className="ui right floated button"><Icon name="angle double right" /></button> </Segment>
                                 )
                             })}
                             <Button id="powerButton" onClick={() => {
