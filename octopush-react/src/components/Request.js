@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import {withCookies, useCookies } from 'react-cookie';
 import axios from 'axios'
 import qs from 'qs'
 
@@ -20,6 +21,7 @@ const Request = () => {
         receiverLng: ''
     })
     const [results, setResults] = useState({})
+    const [cookies, setCookie, removeCookie] = useCookies(['token'])
 
 
     const onInputChange = (event) => {     
@@ -34,19 +36,28 @@ const Request = () => {
 
     const onFormSubmit = (e) => {
         e.preventDefault()
+        console.log(cookies)
+        const token = cookies.token
 
         axios.post(
             'http://localhost:5000/api/v1/newrequest', 
-            qs.stringify({requestForm})
+            qs.stringify({requestForm}),
+            {
+                headers: {
+                  'auth_token': token
+                }
+            }
         )
     }
 
     useEffect(() => {
+
+        console.log(cookies)
         const search = async (postcode) => {
             const { data } = await axios.get('https://maps.googleapis.com/maps/api/geocode/json?', {
                 params: {
                     address: postcode,
-                    key: "AIzaSyBdM1pfpyABjcWkTpwapBlVn484As7UaNY"
+                    key: "AIzaSyDetdZ8-OnHzti6_IUpqY0NMw3ISltLYBo"
                 }
             })
 
@@ -69,6 +80,49 @@ const Request = () => {
         <div className="ui container">
             <form className="ui form" onSubmit={onFormSubmit}>
                 <h2 className="ui dividing header">Delivery Request Form</h2>
+
+                <h3 className="ui dividing header">Delivery Item Information</h3>
+                <div className="fields">
+                    <div className="thirteen wide field required">
+                        <label>Item Description</label>
+                        <div className="ui left icon input">
+                            <i className="boxes icon"></i>
+                            <input 
+                                type="text" 
+                                name="itemDesc" 
+                                placeholder="Please enter the item description"
+                                value={requestForm.itemDesc}
+                                onChange={onInputChange}
+                            />
+                        </div>
+                    </div>
+                    <div className="four wide field required">
+                        <label>Quantity</label>
+                        <div className="ui left icon input">
+                            <i className="shopping cart icon"></i>
+                            <input 
+                                type="text" 
+                                name="itemQty" 
+                                placeholder="Item quantity"
+                                value={requestForm.itemQty}
+                                onChange={onInputChange}
+                            />
+                        </div>
+                    </div>
+                    
+                </div>
+
+                <div className="field">
+                    <label>Special Instructions</label>
+                    <textarea 
+                        rows="2" 
+                        name="instructions"
+                        value={requestForm.instructions}
+                        onChange={onInputChange}
+                    ></textarea>
+                </div>
+
+                <h3 className="ui dividing header">Receiver Details</h3>
                     
                 <div className="two fields">
                     <div className="twelve wide field required">
@@ -173,7 +227,7 @@ const Request = () => {
                     </div>
                 </div>
 
-                <div className="fields">
+                {/* <div className="fields">
                     <div className="twelve wide field"></div>
                     <div className="twelve wide field">
                         <label>Country</label>
@@ -184,48 +238,9 @@ const Request = () => {
                             onChange={onInputChange}
                         />  
                     </div>
-                </div>
+                </div> */}
 
-                <h3 className="ui dividing header">Delivery Item Information</h3>
-                <div className="fields">
-                    <div className="fourteen wide field required">
-                        <label>Item Description</label>
-                        <div className="ui left icon input">
-                            <i className="boxes icon"></i>
-                            <input 
-                                type="text" 
-                                name="itemDesc" 
-                                placeholder="Please enter the item description"
-                                value={requestForm.itemDesc}
-                                onChange={onInputChange}
-                            />
-                        </div>
-                    </div>
-                    <div className="three wide field required">
-                        <label>Quantity</label>
-                        <div className="ui left icon input">
-                            <i className="shopping cart icon"></i>
-                            <input 
-                                type="text" 
-                                name="itemQty" 
-                                placeholder="Item quantity"
-                                value={requestForm.itemQty}
-                                onChange={onInputChange}
-                            />
-                        </div>
-                    </div>
-                    
-                </div>
-
-                <div className="field">
-                    <label>Special Instructions</label>
-                    <textarea 
-                        rows="2" 
-                        name="instructions"
-                        value={requestForm.instructions}
-                        onChange={onInputChange}
-                    ></textarea>
-                </div>
+                
 
                 <button type="submit" className="ui fluid large teal button" tabIndex="0">Submit Order</button>
             </form>
@@ -234,4 +249,4 @@ const Request = () => {
 
 }
 
-export default Request
+export default withCookies(Request)

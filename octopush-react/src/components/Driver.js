@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Icon, Segment, Button, Image, Header, Modal } from 'semantic-ui-react'
+import { Grid, Icon, Segment, Button, Header, Modal } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css'
 
 
@@ -167,7 +167,7 @@ class Driver extends React.Component {
                             if (this.state.online === true) {
                                 return this.setState({ online: false })
                             } else return this.setState({ online: true })
-                        }} className="ui center aligned" basic color={this.state.online === true ? 'green' : 'red'}><Icon class="center aligned" name="power" /></Button></>
+                        }} className="ui center aligned" basic color={this.state.online === true ? 'green' : 'red'}><Icon className="center aligned" name="power" /></Button></>
                     }
                     {
                         this.state.phase === 2 && <>
