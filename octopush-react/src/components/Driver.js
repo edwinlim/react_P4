@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Icon, Segment, Button, Image, Header, Modal } from 'semantic-ui-react'
+import { Grid, Icon, Segment, Button, Header, Modal } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css'
 import { getApiUrl, postHttpRequest, removeDuplicatesFromList } from "../utility"
 import toastr from 'toastr';
@@ -34,7 +34,8 @@ class Driver extends React.Component {
             userData: {
                 user_id: 1
             },
-            tempTourData: []
+            tempTourData: [],
+            viewOTPAtDriverEnd: ''
         }
     }
 
@@ -42,6 +43,10 @@ class Driver extends React.Component {
     componentDidMount() {
         //network call their to fetch dropdown types
         // this postRequest gets the url and return some data
+        this.getClusterName()
+    }
+
+    getClusterName = () => {
         postHttpRequest(getApiUrl('getClusterName', 'api/v1/'), {
             driverID: this.state.userData['user_id']
         })
@@ -59,7 +64,8 @@ class Driver extends React.Component {
     openActiveCluster = (label) => {
         // fetch blocks based on cluster (the one on which user has clicked)
         postHttpRequest(getApiUrl('getBlockName', 'api/v1/'), {
-            tour_id: label
+            tour_id: label,
+            driverID: this.state.userData["user_id"]
         })
             .then(res => {
                 let dataToSet = {
@@ -123,22 +129,36 @@ class Driver extends React.Component {
         })
     }
 
-    submitOTP = () => {
+    submitOTP = (job) => {
         if (!this.state.otp) {
-            console.log("1")
+            toastr.error("OTP is Required")
             return false
         }
         if (this.state.otp.length !== 4) {
-            console.log("2")
+            toastr.error("OTP should be of length 4")
             return false
         }
         // make an api call at bakckend
         // you have to send this.state.otp and this.state.jobId
         // on success
-        console.log(this.state.otp.length)
-        this.setState({
-            setOTPModalOpen: false
+        postHttpRequest(getApiUrl('otpValidtor', 'api/v1/'), {
+            jobId: job.jobId,
+            otp: this.state.otp,
+            typeOfCode: job.type
         })
+            .then(res => {
+                if (res.status) {
+                    toastr.success("Request has been delivered", "OTP is Valid")
+                    this.setState({
+                        setOTPModalOpen: false,
+                        viewOTPAtDriverEnd: ''
+                    }, () => {
+                        this.getLatestJobs()
+                    })
+                } else {
+                    toastr.error(res.message)
+                }
+            })
     }
 
     submitReason = (job) => {
@@ -151,6 +171,7 @@ class Driver extends React.Component {
         })
             .then(res => {
                 if (res.status) {
+                    toastr.success("JOB Marked As Incomplete")
                     this.setState({
                         setOtherActionsModalOpen: false
                     }, () => {
@@ -160,16 +181,28 @@ class Driver extends React.Component {
             })
     }
 
-    openPopupForOtp = (type) => {
+    openPopupForOtp = async (job) => {
+        let tempOTP = ''
+        let result = await postHttpRequest(getApiUrl('otpGenerator', 'api/v1/'), {
+            jobId: job.jobId,
+            typeOfCode: job.type === 'Pickup' ? "pickup_code" : "delivery_code",
+            showOTP: job.type === 'Pickup' ? true : false
+        })
+        if (result && result['status']) {
+            tempOTP = result.otp
+        }
         this.setState({
-            type: type,
-            setOTPModalOpen: true
+            type: job.type,
+            setOTPModalOpen: true,
+            viewOTPAtDriverEnd: tempOTP,
+            otp: ""
         })
     }
 
     getLatestJobs = () => {
         postHttpRequest(getApiUrl('getBlockName', 'api/v1/'), {
-            tour_id: this.state.activeCluster
+            tour_id: this.state.activeCluster,
+            driverID: this.state.userData["user_id"]
         })
             .then(res => {
                 if (res['status']) {
@@ -181,6 +214,8 @@ class Driver extends React.Component {
                     } else {
                         this.openActiveCluster(this.state.activeCluster)
                     }
+                } else {
+                    this.gobackPhase1()
                 }
             })
     }
@@ -221,6 +256,37 @@ class Driver extends React.Component {
             })
     }
 
+    gobackPhase1 = () => {
+        this.setState({
+            activeCluster: "",
+            phase: 1,
+            activeClusterData: []
+        }, () => {
+            postHttpRequest(getApiUrl('getClusterName', 'api/v1/'), {
+                driverID: this.state.userData['user_id']
+            })
+                .then(res => {
+                    if (res.status && res.data && res.data.length > 0) {
+                        this.setState({
+                            dropDownType: removeDuplicatesFromList(res.data).map(x => { return { label: x } })
+                        }, () => {
+                            this.fetchLatestUserdata()
+                        })
+                    }
+                })
+        })
+    }
+
+    gobackPhase2 = () => {
+        this.setState({
+            activeBlockLabel: "",
+            phase: 2,
+            activeBlockData: []
+        }, () => {
+            this.openActiveCluster(this.state.activeCluster)
+        })
+    }
+
     render() {
         return (<div style={{ marginTop: "30px" }}>
             <Grid container stackable as="h1">
@@ -236,11 +302,7 @@ class Driver extends React.Component {
                     }
                     {
                         this.state.phase === 2 && <>
-                            <button onClick={() => this.setState({
-                                activeCluster: "",
-                                phase: 1,
-                                activeClusterData: []
-                            })}><Icon name="angle double left" /></button>
+                            <button onClick={() => this.gobackPhase1()}><Icon name="angle double left" /></button>
                             {this.state.activeCluster}
                             {this.state.activeClusterData.length > 0 && this.state.activeClusterData.map(x => {
                                 return (
@@ -251,20 +313,12 @@ class Driver extends React.Component {
                                         <button onClick={() => this.openActiveBlock(x)} className="ui right floated button"><Icon name="angle double right" /></button> </Segment>
                                 )
                             })}
-                            <Button id="powerButton" onClick={() => {
-                                if (this.state.online === true) {
-                                    return this.setState({ online: false })
-                                } else return this.setState({ online: true })
-                            }} className="ui center aligned" basic color={this.state.online === true ? 'green' : 'red'}><Icon id="powerButtonIcon" class="center aligned" name="power" /></Button>
+                            <Button id="powerButton" onClick={() => this.markAvailable()} className="ui right aligned" basic color={this.state.userData['availability'] === true ? 'green' : 'red'}><Icon id="powerButtonIcon" class="center aligned" name="power" /></Button>
                         </>
                     }
                     {
                         this.state.phase === 3 && <>
-                            <button onClick={() => this.setState({
-                                activeBlockLabel: "",
-                                phase: 2,
-                                activeBlockData: []
-                            })}><Icon name="angle double left" /></button>
+                            <button onClick={() => this.gobackPhase2()}><Icon name="angle double left" /></button>
                             {this.state.activeBlockData.length > 0 && this.state.activeBlockData.map(x => {
                                 return (
                                     <Segment className="ui top aligned">{this.state.activeBlockLabel}
@@ -274,7 +328,7 @@ class Driver extends React.Component {
                                         <>
                                             <Modal
                                                 onClose={() => this.handleStateChange('setOTPModalOpen', true)}
-                                                onOpen={() => this.openPopupForOtp(x.type)}
+                                                onOpen={() => this.openPopupForOtp(x)}
                                                 open={this.state.setOTPModalOpen}
                                                 trigger={<Button>Get/Give OTP</Button>}
                                             >
@@ -289,7 +343,7 @@ class Driver extends React.Component {
                                                 {this.state.type && this.state.type.match(/pickup/gi) && <Modal.Content>
                                                     <Modal.Description>
                                                         <Header>OTP</Header>
-                                                        <div>Example OTP: 4315</div>
+                                                        <div>Pickup OTP: {this.state.viewOTPAtDriverEnd}</div>
                                                     </Modal.Description>
                                                 </Modal.Content>}
 
@@ -297,7 +351,7 @@ class Driver extends React.Component {
                                                     <Button color='red' onClick={() => this.handleStateChange('setOTPModalOpen', false)}>
                                                         cancel
         </Button>
-                                                    {this.state.type && this.state.type.match(/delivery/gi) && <Button color='blue' onClick={() => this.submitOTP()}>
+                                                    {this.state.type && this.state.type.match(/delivery/gi) && <Button color='blue' onClick={() => this.submitOTP(x)}>
                                                         Submit
         </Button>}
                                                 </Modal.Actions>
