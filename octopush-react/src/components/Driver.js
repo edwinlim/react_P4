@@ -13,6 +13,7 @@ class Driver extends React.Component {
             dropDownType: [],
             phase: 1,
             activeCluster: "",
+            activeClusterId: "",
             activeClusterData: [],
             activeBlockLabel: "",
             activeBlockData: [],
@@ -53,7 +54,7 @@ class Driver extends React.Component {
             .then(res => {
                 if (res.status && res.data && res.data.length > 0) {
                     this.setState({
-                        dropDownType: removeDuplicatesFromList(res.data).map(x => { return { label: x } })
+                        dropDownType: res.data
                     }, () => {
                         this.fetchLatestUserdata()
                     })
@@ -64,12 +65,14 @@ class Driver extends React.Component {
     openActiveCluster = (label) => {
         // fetch blocks based on cluster (the one on which user has clicked)
         postHttpRequest(getApiUrl('getBlockName', 'api/v1/'), {
-            tour_id: label,
+            tour_id: label.id,
             driverID: this.state.userData["user_id"]
         })
             .then(res => {
                 let dataToSet = {
-                    activeCluster: label,
+                    activeCluster: label.label,
+                    activeClusterId: label.id,
+                    activeClusterObj: label,
                     phase: 2,
                     activeClusterData: []
                 }
@@ -201,7 +204,7 @@ class Driver extends React.Component {
 
     getLatestJobs = () => {
         postHttpRequest(getApiUrl('getBlockName', 'api/v1/'), {
-            tour_id: this.state.activeCluster,
+            tour_id: this.state.activeClusterId,
             driverID: this.state.userData["user_id"]
         })
             .then(res => {
@@ -212,7 +215,7 @@ class Driver extends React.Component {
                             otherData: res['data'][this.state.activeBlockLabel]
                         })
                     } else {
-                        this.openActiveCluster(this.state.activeCluster)
+                        this.openActiveCluster(this.state.activeClusterObj)
                     }
                 } else {
                     this.gobackPhase1()
@@ -251,6 +254,7 @@ class Driver extends React.Component {
         })
             .then(res => {
                 if (res.status) {
+                    console.log("userdata", res.data)
                     this.setState({ userData: res.data })
                 }
             })
@@ -259,21 +263,12 @@ class Driver extends React.Component {
     gobackPhase1 = () => {
         this.setState({
             activeCluster: "",
+            activeClusterId: "",
+            activeClusterObj: {},
             phase: 1,
             activeClusterData: []
         }, () => {
-            postHttpRequest(getApiUrl('getClusterName', 'api/v1/'), {
-                driverID: this.state.userData['user_id']
-            })
-                .then(res => {
-                    if (res.status && res.data && res.data.length > 0) {
-                        this.setState({
-                            dropDownType: removeDuplicatesFromList(res.data).map(x => { return { label: x } })
-                        }, () => {
-                            this.fetchLatestUserdata()
-                        })
-                    }
-                })
+            this.getClusterName()
         })
     }
 
@@ -283,7 +278,7 @@ class Driver extends React.Component {
             phase: 2,
             activeBlockData: []
         }, () => {
-            this.openActiveCluster(this.state.activeCluster)
+            this.openActiveCluster(this.state.activeClusterObj)
         })
     }
 
@@ -295,7 +290,7 @@ class Driver extends React.Component {
                         {this.state.dropDownType.length > 0 && this.state.dropDownType.map(x => {
                             return (
                                 <Segment className="ui top aligned">{x.label}
-                                    <button onClick={() => this.openActiveCluster(x.label)} className="ui right floated button"><Icon name="angle double right" /></button> </Segment>
+                                    <button onClick={() => this.openActiveCluster(x)} className="ui right floated button"><Icon name="angle double right" /></button> </Segment>
 
                             )
                         })}<div><Button id="powerButton" onClick={() => this.markAvailable()} className="ui right aligned" basic color={this.state.userData['availability'] === true ? 'green' : 'red'}><Icon id="powerButtonIcon" class="center aligned" name="power" /></Button></div></>
