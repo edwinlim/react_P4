@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import qs from 'qs';
-import Login from './Login'
+import {Redirect} from 'react-router-dom'
+require('dotenv').config();
 
 const Register = () => {
 
@@ -11,7 +12,7 @@ const Register = () => {
         email: '',
         password: '',
         confirmPass: '',
-        role: '',
+        role: "1",
         houseNum: '',
         streetAddr: '',
         floor: '',
@@ -20,17 +21,18 @@ const Register = () => {
         country: 'Singapore',
         contact: '',
         lat: '',
-        lng: ''
+        lng: '',
+        plate: '',
+        model: '',
+        otherinfor: ''
     })
 
     const [results, setResults] = useState({})
-    const [radio, setRadio] = useState("1")
 
     const onInputChange = (event) => {
         setRegister(
             {...register, 
                 [event.target.name]: event.target.value,
-                role: radio,
                 lat: results.lat,
                 lng: results.lng
         })
@@ -39,19 +41,14 @@ const Register = () => {
     const onFormSubmit = (e) => {
         e.preventDefault()
 
+
         axios.post(
-            'http://localhost:5000/api/v1/users/register', 
+            'http://localhost:5000/api/v1/user/register', 
             qs.stringify({register})
         )
         .then(response => {
-            console.log(response)
-
-            // if (error === 400){
-                
-            // }
-
             if (response.status === 200 && response.statusText === 'OK') {
-                return <Login data={response.data}/>
+                <Redirect to='/login' data={response.data} />
             }
         })
 
@@ -59,26 +56,26 @@ const Register = () => {
 
     useEffect(() => {
         const search = async (postcode) => {
+            let postal = postcode + ",Sg"
             const { data } = await axios.get('https://maps.googleapis.com/maps/api/geocode/json?', {
                 params: {
-                    address: postcode,
-                    key: "AIzaSyBdM1pfpyABjcWkTpwapBlVn484As7UaNY"
+                    key: "AIzaSyDetdZ8-OnHzti6_IUpqY0NMw3ISltLYBo",
+                    address: postal
                 }
             })
-            
-            setResults(data.results[0].geometry.location)
+            console.log(data)
+            setResults(data)
         }
         
         const timeoutId = setTimeout(() => {
             if (register.postcode){
                 search(register.postcode)
             } 
-        }, 1000);
+        }, 3000);
 
         return () => {
             clearTimeout(timeoutId)
         }
-              
     }, [register.postcode])
 
 
@@ -158,7 +155,7 @@ const Register = () => {
                         <div className="ui left icon input">
                             <i className="lock icon"></i> 
                              <input 
-                                type="text" 
+                                type="password" 
                                 placeholder="Confirm Password"
                                 required
                                 name="confirmPass"
@@ -178,9 +175,10 @@ const Register = () => {
                         <div className="field">
                             <div className="ui radio checkbox">
                                 <input type="radio"
-                                    checked={radio === "1"}
+                                    checked={register.role === "1"}
                                     value="1"
-                                    onChange={(e) => { setRadio(e.target.value) }}
+                                    name="role"
+                                    onChange={onInputChange}
                                 />
                                 <label>User</label>
                             </div>
@@ -189,9 +187,10 @@ const Register = () => {
                         <div className="field">
                             <div className="ui radio checkbox">
                                 <input type="radio"
-                                    checked={radio === "2"}
+                                    checked={register.role  === "2"}
                                     value="2"
-                                    onChange={(e) => { setRadio(e.target.value)}}
+                                    name="role"
+                                    onChange={onInputChange}
                                 />
                                 <label>Driver</label>
                             </div>
@@ -200,9 +199,10 @@ const Register = () => {
                         <div className="field">
                             <div className="ui radio checkbox">
                                 <input type="radio"
-                                    checked={radio === "3"}
+                                    checked={register.role === "3"}
                                     value="3"
-                                    onChange={(e) => { setRadio(e.target.value)}}
+                                    name="role"
+                                    onChange={onInputChange}
                                 />
                                 <label>Both</label>
                             </div>
@@ -210,9 +210,65 @@ const Register = () => {
                 
                     </div>
                 </div>
+
+              
+
+                { register.role !== "1" && ( 
+                    <div>
+                            <div className="two fields active">            
+                                <div className="ui eight wide field left aligned container required">   
+                                    <label>Vehicle Number</label>
+                                    <div className="ui left icon input">
+                                        <i className="tag icon"></i> 
+                                        <input 
+                                            type="text" 
+                                            placeholder="Plate Number"
+                                            required
+                                            name="plate"
+                                            value={register.plate}
+                                            onChange={onInputChange}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="ui eight wide field left aligned container required">    
+                                    <label>Model and type</label>
+                                    <div className="ui left icon input">
+                                        <i className="shipping icon"></i> 
+                                        <input 
+                                            type="text" 
+                                            placeholder="Model and Type"
+                                            required
+                                            name="model"
+                                            value={register.model}
+                                            onChange={onInputChange}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="field">
+                                <label>Other Information</label>
+                                <div className="ui left icon input">
+                                    <i className="info icon"></i>
+                                    <input 
+                                        type="text" 
+                                        name="otherinfor" 
+                                        required
+                                        placeholder="Vehicle Color, license and etc"
+                                        value={register.otherinfor}
+                                        onChange={onInputChange} 
+                                    />
+                                </div>
+                            </div>
+                    </div>
+                    
+                ) }
+                
                 
 
                 <h3 className="ui dividing header" style={{ marginTop:"6%" }}>Address</h3>
+                    
                 <div className="two fields">
                     <div className="four wide field required">
                         <label>House or Block #</label>
