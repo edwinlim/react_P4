@@ -7,6 +7,7 @@ import Driver from './Driver';
 import Main from './Main';
 import Register from './auth/Register';
 import Login from './auth/Login'
+import Admin from './Admin'
 import '../App.css';
 
 
@@ -29,6 +30,10 @@ const App = () => {
 
                     <Route path="/login">
                         <Login />
+                    </Route>
+
+                    <Route path="/admin">
+                        <Admin />
                     </Route>
 
                     <Route path="/">
