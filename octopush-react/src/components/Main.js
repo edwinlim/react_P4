@@ -24,7 +24,7 @@ const Main = (cookies) => {
             </div>
 
             <div className="ui center aligned two column grid">
-                {role == "1" || role == "3" ? (
+                {role === "1" || role === "3" ? (
 
                     <div class="eight wide row">
                         <Link href="/request" className="blue column">
