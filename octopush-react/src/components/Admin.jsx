@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { withCookies, useCookies } from 'react-cookie';
 import axios from 'axios'
 import { ItemDescription } from 'semantic-ui-react';
-import { Fragment } from 'react';
+
+
 
 
 const Admin = () => {
@@ -18,6 +19,29 @@ const Admin = () => {
         setRequests(response.data.RequestsList)
         setIsLoading(true)
     }
+    const  renderSwitch = (param) => {
+        switch (param) {
+            case '0':
+                return 'Request Submitted';
+            case '1':
+                return 'Driver Assigned. Ready for pickup';
+            case '2':
+                return 'Picked Up. On way to wharehouse';
+            case '3':
+                return 'Received by Wharehouse';
+            case '4':
+                return 'Driver Assigned. Ready for delivery.';
+            case '5':
+                return 'Delivery on the way';
+            case '6':
+                return 'Delivery Completed. ';
+            case '7':
+                return 'Failed Delivery';
+            default:
+                return 'Unknown Status';
+        }
+    }
+
 
 
 
@@ -36,10 +60,8 @@ const Admin = () => {
                 <tr><th>Name</th>
                     <th>Email</th>
                     <th>Contact Number</th>
-                    <th>Block/House No.</th>
-                    <th>Street Name</th>
+                    <th>Address</th>
                     <th>Floor</th>
-                    <th>Unit</th>
                     <th>Item Description</th>
                     <th>Qty</th>
                     <th>Instructions</th>
@@ -68,21 +90,15 @@ const Admin = () => {
 
 
                                     <td>
-                                        {item.receiver_block_num}
+                                        {item.receiver_block_num + ' ' + item.receiver_road_name}
 
                                     </td>
 
-                                    <td>
-                                        {item.receiver_road_name}
-                                    </td>
 
                                     <td>
-                                        {item.receiver_floor}
+                                        {item.receiver_floor + '-' + item.receiver_unit_number}
                                     </td>
 
-                                    <td>
-                                        {item.receiver_unit_number}
-                                    </td>
 
                                     <td>
                                         {item.item_description}
@@ -95,9 +111,9 @@ const Admin = () => {
                                     <td>
                                         {item.special_instructions}
                                     </td>
-                                    <td>
-                                        {item.status}
-                                    </td>
+
+                                    <td>{renderSwitch(item.status)}</td>
+
                                     <td>
                                         <button>Update</button>
                                     </td>
