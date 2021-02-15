@@ -2,15 +2,25 @@ import React, { useEffect, useState } from 'react'
 import { withCookies, useCookies } from 'react-cookie';
 import axios from 'axios'
 import { ItemDescription } from 'semantic-ui-react';
+import { Fragment } from 'react';
+import { Map, Marker, Circle, InfoWindow, GoogleApiWrapper, Polygon } from 'google-maps-react';
+import { getApiUrl, postHttpRequest, removeDuplicatesFromList } from "../utility"
+require('dotenv').config()
 
-
-
-
-const Admin = () => {
+const Admin = (props) => {
 
 
     const [requests, setRequests] = useState([])
     const [isLoading, setIsLoading] = useState(false)
+
+    const defaultProps = {
+        center: {
+            lat: 1.360270,
+            lng: 103.851759
+        }
+    }
+
+    const [clusterMapData, setClusterMapData] = useState([])
 
     const getRequest = async () => {
         const response = await axios
@@ -43,18 +53,48 @@ const Admin = () => {
     }
 
 
-
+    const getAdminClusterMapData = () => {
+        postHttpRequest(getApiUrl('getMapData', 'api/v1/'), {})
+            .then(res => {
+                if (res.status && res.data && res.data.length > 0) {
+                    setClusterMapData(res.data)
+                }
+            })
+    }
 
     useEffect(() => {
         getRequest()
-
+        getAdminClusterMapData()
     }, [])
 
-
+    console.log(clusterMapData)
 
     return (
 
-        <table class="ui celled table">
+        <>
+            <div className="map">
+                <Map
+                    google={props.google}
+                    // initialCenter={this.props.center}
+                    // zoom={this.state.zoom}
+                    center={defaultProps.center}
+                    scrollwheel={true}
+                // onMouseover={this.onMapClicked}
+                >
+                    {clusterMapData && clusterMapData.length > 0 && clusterMapData.map(x => {
+                        return (
+                            <Marker
+                                position={x.latLng}
+                                // name={this.state.locationText}
+                                // onMouseover={this.onMarkerClick}
+                                // onMouseout={this.onInfoWindowClose}
+                                icon={x.markerIcon}
+                            />
+                        )
+                    })}
+                </Map>
+            </div>
+            <table class="ui celled table">
             <thead>
 
                 <tr><th>Name</th>
@@ -130,10 +170,11 @@ const Admin = () => {
             </tbody>
 
         </table >
+        </>
+
     )
 }
 
-
-
-
-export default Admin;
+export default GoogleApiWrapper({
+    apiKey: (process.env.REACT_APP_GOOGLE_MAP_API)
+})(Admin)

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import {withCookies, useCookies } from 'react-cookie';
-import axios from 'axios'
-import qs from 'qs'
+import axios from 'axios';
+import qs from 'qs';
+import { useHistory } from 'react-router-dom';
 
 const Request = () => {
     const [requestForm, setRequestForm] = useState({
@@ -21,7 +22,8 @@ const Request = () => {
         receiverLng: ''
     })
     const [results, setResults] = useState({})
-    const [cookies, setCookie, removeCookie] = useCookies(['token'])
+    const [cookies, setCookie] = useCookies(['token'])
+    const history = useHistory()
 
 
     const onInputChange = (event) => {     
@@ -36,7 +38,6 @@ const Request = () => {
 
     const onFormSubmit = (e) => {
         e.preventDefault()
-        console.log(cookies)
         const token = cookies.token
 
         axios.post(
@@ -47,12 +48,21 @@ const Request = () => {
                   'auth_token': token
                 }
             }
-        )
+        ).then(response => {
+            if (response.status === 200 && response.statusText === 'OK') {
+                setCookie('token', response.data, {
+                    path: '/status',
+                    // expires: moment.unix(response.data.expiresAt).toDate()
+                })
+                
+               history.push('/status', {cookies})
+            }
+        })
+
     }
 
     useEffect(() => {
 
-        console.log(cookies)
         const search = async (postcode) => {
             const { data } = await axios.get('https://maps.googleapis.com/maps/api/geocode/json?', {
                 params: {

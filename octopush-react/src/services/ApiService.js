@@ -15,6 +15,10 @@ const backendAPI = {
             password: loginInput.password
         }))
     },
+
+    getSenderRequests: (senderId) => {
+        return axiosInstance.post(`/getSenderRequests/${senderId}`)
+    }
 }
 
 export default backendAPI

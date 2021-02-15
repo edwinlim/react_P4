@@ -132,7 +132,7 @@ class Driver extends React.Component {
         })
     }
 
-    submitOTP = (job) => {
+    submitOTP = () => {
         if (!this.state.otp) {
             toastr.error("OTP is Required")
             return false
@@ -145,9 +145,9 @@ class Driver extends React.Component {
         // you have to send this.state.otp and this.state.jobId
         // on success
         postHttpRequest(getApiUrl('otpValidtor', 'api/v1/'), {
-            jobId: job.jobId,
+            jobId: this.state.activeJob.jobId,
             otp: this.state.otp,
-            typeOfCode: job.type
+            typeOfCode: this.state.activeJob.type === 'Pickup' ? "pickup_code" : "delivery_code"
         })
             .then(res => {
                 if (res.status) {
@@ -198,7 +198,8 @@ class Driver extends React.Component {
             type: job.type,
             setOTPModalOpen: true,
             viewOTPAtDriverEnd: tempOTP,
-            otp: ""
+            otp: "",
+            activeJob: job
         })
     }
 
