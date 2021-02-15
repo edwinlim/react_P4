@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import {withCookies, useCookies } from 'react-cookie';
 import { useHistory, withRouter } from 'react-router-dom';
+import { showToastMessage } from '../../utility';
 import Link from '../Link';
-import apiService from '../../services/ApiService'
+import apiService from '../../services/ApiService';
 import {Grid, Header, Form, Segment, Container, Button, Message} from 'semantic-ui-react'
 
 
@@ -12,7 +13,7 @@ const Login = () => {
         password: ""
     })
 
-    const [cookies, setCookie, removeCookie] = useCookies(['token'])
+    const [cookies, setCookie] = useCookies(['token'])
 
     const history = useHistory()
 
@@ -47,9 +48,7 @@ const Login = () => {
                         path: '/',
                         // expires: moment.unix(response.data.expiresAt).toDate()
                     })
-                    
-                   console.log(history)
-
+                    showToastMessage("success", "Login Successfully")
                    history.push('/', {cookies})
  
                 }
@@ -73,7 +72,7 @@ const Login = () => {
                         Email
                     </Container>
                     <Form.Input 
-                        fluid icon='user' 
+                        fluid icon='mail' 
                         iconPosition='left' 
                         placeholder='E-mail address'
                         name='email'
