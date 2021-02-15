@@ -1,4 +1,7 @@
 import axios from "axios";
+import toastr from 'toastr';
+import 'toastr/build/toastr.min.css';
+
 const BACKEND_HOST = "http://localhost:5000/"
 
 const axiosInstance = axios.create({
@@ -30,4 +33,16 @@ export function removeDuplicatesFromList(data) {
     return data.filter(function (item, pos) {
         return data.indexOf(item) === pos
     })
+}
+
+export function showToastMessage(type, msg) {
+    if (type === 'error') {
+        toastr.error(msg)
+    }
+
+    if (type === 'success') {
+        toastr.success(msg)
+    }
+
+    return
 }

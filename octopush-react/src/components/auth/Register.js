@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import qs from 'qs';
-import {Redirect} from 'react-router-dom'
+import {withCookies, useCookies } from 'react-cookie';
+import { useHistory } from 'react-router-dom';
 require('dotenv').config();
 
 const Register = () => {
@@ -28,6 +29,8 @@ const Register = () => {
     })
 
     const [results, setResults] = useState({})
+    const [cookies, setCookie] = useCookies([])
+    const history = useHistory()
 
     const onInputChange = (event) => {
         setRegister(
@@ -40,7 +43,7 @@ const Register = () => {
 
     const onFormSubmit = (e) => {
         e.preventDefault()
-
+        console.log(register)
 
         axios.post(
             'http://localhost:5000/api/v1/user/register', 
@@ -48,7 +51,12 @@ const Register = () => {
         )
         .then(response => {
             if (response.status === 200 && response.statusText === 'OK') {
-                <Redirect to='/login' data={response.data} />
+                setCookie('token', response.data.token, {
+                    path: '/login',
+                    // expires: moment.unix(response.data.expiresAt).toDate()
+                })
+                
+               history.push('/login', {cookies})
             }
         })
 
@@ -63,8 +71,7 @@ const Register = () => {
                     address: postal
                 }
             })
-            console.log(data)
-            setResults(data)
+            setResults(data.results[0].geometry.location)
         }
         
         const timeoutId = setTimeout(() => {
@@ -359,4 +366,4 @@ const Register = () => {
 
 }
 
-export default Register
+export default withCookies(Register)
