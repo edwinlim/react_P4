@@ -9,11 +9,13 @@ const Main = (cookies) => {
     const token = cookies.allCookies.token
     const rawJWT = jwt.decode(token)
 
-    console.log(rawJWT)
+
 
 
     useEffect(() => {
-        setRole(rawJWT.role)
+        if (rawJWT) {
+            setRole(rawJWT.role)
+        }
     }, []);
 
 
