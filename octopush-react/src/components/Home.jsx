@@ -9,24 +9,30 @@ class DesktopContainer extends Component {
         super(props)
         this.state = {
             searchItem: '',
-            formErr: ''
+            formErr: '',
+            searchedItem:''
+
         }
     }
     handleFormSubmission(e) {
+        const search = this.state.searchItem
         e.preventDefault()
+        console.log(search)
         axios.post('http://localhost:5000/api/v1/queryDelivery', qs.stringify({
-            email: this.state.email,
-            contact: this.state.contact
+            searchItem: search
 
         }))
             .then(response => {
+                console.log(response)
                 if (!response.data.success) {
                     this.setState({
-                        formErr: "Error occurred in form, please check values"
+                        formErr: "Error occurred in form, please check values",
+                        searchedItem: response.data
                     })
                 }
             }
             )
+            .catch(err => { console.log(err) })
     }
 
 
@@ -58,7 +64,7 @@ class DesktopContainer extends Component {
                         fontWeight: 'normal',
                         marginTop: '0.5em',
                         textAlign: 'center'
-                    }}>We help Home Businesses delivery. Fast.</Header>
+                    }}>We help Home Businesses deliver. Fast.</Header>
                 <Segment style={{ padding: '0em' }} vertical>
                     <Grid celled='internally' columns='equal' stackable>
                         <Grid.Row textAlign='center'>
@@ -69,34 +75,45 @@ class DesktopContainer extends Component {
                                 <p style={{ fontSize: '1.33em' }}>You want to gratify your customers with fast delivery. <br></br>Trust it to Octopush to push it to your customers. <br></br>  </p>
                             </Grid.Column>
                             <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
-                                <Header as='h6' style={{ fontSize: '1.5em',
-                            textAlign: 'center' }}>
+                                <Header as='h6' style={{
+                                    fontSize: '1.5em',
+                                    textAlign: 'center'
+                                }}>
                                     Tracking
                                 </Header>
-                                < Form paddingBottom='10em' >
+                                < Form 
+                                onSubmit={e=>this.handleFormSubmission(e)}
+                                paddingBottom='20em' style={{
+                                    marginTop: '2px',
+                                    
+                                }}>
                                     <TextArea onChange={e => {
                                         this.setState({
                                             searchItem: e.target.value
                                         })
                                     }} type='text' placeholder='Search with your email address or mobile number' />
-                                    <Button onClick={e=>{
-                                        console.log('clicked')}}
-                                        basic color='orange'
-                                        style={{
-                                            marginTop: '0.5em',
-
-                                        }}>
+                                    <Button marginTop= '10px' basic color='orange' type='submit'
+                                    style={{
+                                        margin: '10px'
+                                    }} >
                                         Where is my stuff
                                     </Button>
+
+                        
+                                    <Header as='h3' style={{
+                                        color: 'rgba(66, 147, 245)'
+                                    }}> 
+                                        {this.state.searchedItem}
+                                    </Header>
                                 </Form >
 
-                               
+
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>
                 </Segment>
 
-                
+
             </Container>
 
 

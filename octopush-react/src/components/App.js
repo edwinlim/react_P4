@@ -39,12 +39,14 @@ const App = () => {
                         <Login />
                     </Route>
 
-                    <Route path="/home">
-                        <Home />
-                    </Route>
+                   
 
                     <Route path="/admin">
                         <Admin />
+                    </Route>
+
+                    <Route path="/">
+                        <Home />
                     </Route>
 
                     <ProtectedRoute path="/" component={Main} />
