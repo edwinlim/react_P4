@@ -1,8 +1,12 @@
 
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import React from 'react';
+import NavBar from './NavBar'
+import SenderPage from './SenderPage';
 import Request from './Request';
+import RequestStatus from './RequestStatus';
 import Driver from './Driver';
+import ProtectedRoute from './ProtectedRoute';
 // import Route from './Route';
 import Main from './Main';
 import Register from './auth/Register';
@@ -14,14 +18,16 @@ const App = () => {
     return (
         <div>
             <Router>
-                <Switch>
-                    <Route path='/request'>
-                        <Request />
-                    </Route>
+                <NavBar />
 
-                    <Route path="/driver">
-                        <Driver />
-                    </Route>
+                <Switch>
+                    <ProtectedRoute path='/sender' component={SenderPage} />
+
+                    <ProtectedRoute path='/request' component={Request} />
+
+                    <ProtectedRoute path='/status' component={RequestStatus} />
+
+                    <ProtectedRoute path='/driver' component={Driver} />
 
                     <Route path="/register">
                         <Register />
@@ -31,9 +37,7 @@ const App = () => {
                         <Login />
                     </Route>
 
-                    <Route path="/">
-                        <Main />
-                    </Route>
+                    <ProtectedRoute path="/" component={Main} />
                 </Switch>
                 
             </Router>
