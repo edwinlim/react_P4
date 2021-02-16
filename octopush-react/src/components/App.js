@@ -38,17 +38,18 @@ const App = () => {
                         <Login />
                     </Route>
 
-                    
 
                     <Route path="/admin">
                         <Admin />
                     </Route>
+
 
                     <Route path="/home">
                         <Home />
                     </Route>
 
                     <ProtectedRoute path='/' component={Main} />
+
                 </Switch>
 
             </Router>

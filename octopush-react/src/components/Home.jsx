@@ -5,6 +5,7 @@ import qs from 'qs'
 import Link from './Link';
 import logo from './images/biglogo.jpg'
 
+
 class DesktopContainer extends Component {
 
     constructor(props) {
@@ -45,6 +46,7 @@ class DesktopContainer extends Component {
                 style={{
                     height: '50vh'
                 }}>
+
 
                 <Grid 
                     textAlign='center' 
@@ -87,6 +89,7 @@ class DesktopContainer extends Component {
             </Header>
                                 <p style={{ fontSize: '1.33em' }}>You want to gratify your customers with fast delivery. <br></br>Trust it to Octopush to push it to your customers. <br></br>  </p>
 
+
                                 <Button primary size='huge' href='/login'>
                                     Get Started
                                     <Icon name='right arrow' />
@@ -128,8 +131,7 @@ class DesktopContainer extends Component {
                                         {this.state.searchedItem}
                                     </Header>
                                 </Form >
-                                
-                                
+
 
                             </Grid.Column>
                         </Grid.Row>
