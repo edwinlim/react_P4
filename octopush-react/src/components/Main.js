@@ -13,12 +13,12 @@ const Main = (cookies) => {
     const [role] = useState(rawJWT.role)
 
     return (
-        <div className="ui container center">
-            <div className="ui header">
-                <h1>Home</h1>
+        <div className="ui container center" style={{ marginTop:"10%" }}>
+            <div className="ui header row">
+                <h1></h1>
             </div>
 
-            <div className="ui center aligned two column grid">
+            <div className="ui center aligned two column equal height stretched grid">
                 {/* {  role === "0" ? ( 
                     <div>
                         <Admin />
@@ -35,6 +35,9 @@ const Main = (cookies) => {
                                         src={sender}
                                         size='extra large'
                                         href='/sender'
+                                        style={{height: "200px",
+                                                position: "center"
+                                                }}
                                     />
                                     <Card.Header>Sender</Card.Header>
                                 </Card.Content>
@@ -51,6 +54,9 @@ const Main = (cookies) => {
                                         src={driver}
                                         size='large'
                                         href='/driver'
+                                        style={{height: "200px",
+                                                position: "center"
+                                                }}
                                     />
                                     <Card.Header>Driver</Card.Header>
                                 </Card.Content>

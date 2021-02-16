@@ -3,7 +3,7 @@ import axios from 'axios';
 import qs from 'qs';
 import {withCookies, useCookies } from 'react-cookie';
 import { useHistory } from 'react-router-dom';
-require('dotenv').config();
+import {Grid, Header, Button, Form, Segment, Message} from 'semantic-ui-react'
 
 const Register = () => {
 
@@ -87,11 +87,18 @@ const Register = () => {
 
 
     return (
-        
-        <div className="ui middle aligned center container">
-            <form className="ui form" onSubmit={onFormSubmit}>
-                <h1 className="ui dividing header left aligned">Registeration</h1>
 
+        <Grid textAlign='center' style={{ height: 'auto' }} verticalAlign='middle'>
+        <Grid.Column style={{ width: 'auto' }}>
+            {/* <form className="ui form" onSubmit={onFormSubmit}> */}
+            
+            {/* <h1 className="ui dividing"></h1> */}
+            <Header as='h1' color='teal' textAlign='center' style={{ marginTop: '20px' }}>
+                Registration
+            </Header>
+            
+            <Form size='large' onSubmit={onFormSubmit}>
+            <Segment stacked>
                 <div className="two fields" style={{ marginTop:"5%" }} >
                     <div className="ui eight wide field left aligned container required">
                         <label>First name</label>
@@ -218,8 +225,6 @@ const Register = () => {
                     </div>
                 </div>
 
-              
-
                 { register.role !== "1" && ( 
                     <div>
                             <div className="two fields active">            
@@ -271,13 +276,16 @@ const Register = () => {
                     </div>
                     
                 ) }
-                
-                
+            </Segment>
 
-                <h3 className="ui dividing header" style={{ marginTop:"6%" }}>Address</h3>
-                    
+            <Segment>
+                <Header as='h3' color='black' textAlign='left'>
+                    Address
+                </Header>
+                <h5 className="ui dividing header"></h5>
+                
                 <div className="two fields">
-                    <div className="four wide field required">
+                    <div className="ui four wide field left aligned container required">
                         <label>House or Block #</label>
                         <input 
                             type="text" 
@@ -288,7 +296,7 @@ const Register = () => {
                          />  
                     </div>
 
-                    <div className="twelve wide field required">
+                    <div className="ui twelve wide field left aligned container required">
                         <label>Street Address</label>
                         <div className="ui left icon input">
                             <i className="home icon"></i>
@@ -305,7 +313,7 @@ const Register = () => {
                 </div>
 
                 <div className="three fields">
-                    <div className="six wide field">
+                    <div className="ui four wide field left aligned container">
                     <label>Floor</label>
                         <input 
                             type="text" 
@@ -316,32 +324,32 @@ const Register = () => {
                          /> 
                     </div>
 
-                    <div className="six wide field">
-                    <label>Unit Number</label>
-                        <input 
-                            type="text" 
-                            name="unitNum" 
-                            placeholder="Unit # (Optional)"
-                            value={register.unitNum}
-                            onChange={onInputChange}
-                         /> 
-                    </div>
+                    <div className="ui four wide field left aligned container">
+                        <label>Unit Number</label>
+                            <input 
+                                type="text" 
+                                name="unitNum" 
+                                placeholder="Unit # (Optional)"
+                                value={register.unitNum}
+                                onChange={onInputChange}
+                            /> 
+                        </div>
 
-                    <div className="six wide field required">
-                        <label>Postcode</label>
-                        <input 
-                            type="text" 
-                            name="postcode"
-                            required
-                            placeholder="Postcode"
-                            value={register.postcode}
-                            onChange={onInputChange}
-                         />  
+                        <div className="ui nine wide field left aligned container required">
+                            <label>Postcode</label>
+                            <input 
+                                type="text" 
+                                name="postcode"
+                                required
+                                placeholder="Postcode"
+                                value={register.postcode}
+                                onChange={onInputChange}
+                            />  
+                        </div>
                     </div>
-                </div>
 
                 <div className="field">
-                    <div className="eight wide field required">
+                    <div className="ui left aligned container required">
                         <label>Phone Number</label>
                         <div className="ui left icon input">
                             <i className="phone icon"></i>
@@ -356,11 +364,17 @@ const Register = () => {
                         </div>
                     </div>
                 </div>
+                
+            </Segment>
 
-                <button type="submit" className="ui fluid large teal button" tabIndex="0">Sign Up</button>
-            </form>
-        </div>
-     
+            {/* <button type="submit" className="ui fluid large teal button" tabIndex="0">Sign Up</button> */}
+                <Button color='teal' fluid size='large'>
+                    Sign Up
+                </Button>
+                
+            </Form>           
+    </Grid.Column>                
+    </Grid>
      
     );
 

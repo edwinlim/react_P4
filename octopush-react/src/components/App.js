@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import React from 'react';
 import NavBar from './NavBar'
@@ -39,17 +38,18 @@ const App = () => {
                         <Login />
                     </Route>
 
-                   
 
                     <Route path="/admin">
                         <Admin />
                     </Route>
 
-                    <Route path="/">
+
+                    <Route path="/home">
                         <Home />
                     </Route>
 
-                    <ProtectedRoute path="/" component={Main} />
+                    <ProtectedRoute path='/' component={Main} />
+
                 </Switch>
 
             </Router>
