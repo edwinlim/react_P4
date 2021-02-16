@@ -12,6 +12,7 @@ import Main from './Main';
 import Register from './auth/Register';
 import Login from './auth/Login'
 import Admin from './Admin'
+import Home from './Home'
 import '../App.css';
 
 
@@ -38,8 +39,14 @@ const App = () => {
                         <Login />
                     </Route>
 
+                   
+
                     <Route path="/admin">
                         <Admin />
+                    </Route>
+
+                    <Route path="/">
+                        <Home />
                     </Route>
 
                     <ProtectedRoute path="/" component={Main} />
