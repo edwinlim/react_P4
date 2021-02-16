@@ -6,11 +6,17 @@ import requestImg from './images/Request.jpg'
 import checkstatus from './images/checkstatus.jpg'
 import batch from './images/batch.jpg'
 
+const style = {
+    height: {
+        height: "280px",
+        position: "center"
+    },
+  }
+
 const SenderPage = () => {
 
     return (
-        <div className="ui container">
-            <h1>Sender Main Page</h1>
+        <div className="ui container" style={{ marginTop:"10%" }}>
 
             <div className="ui three column equal height stretched grid">
                 <div className="column">
@@ -18,7 +24,7 @@ const SenderPage = () => {
                         image={requestImg}
                         href='/request'
                         header='Send An Item'
-                        height='400px'
+                        style={style.height}
                     />  
                 </div>
                     
@@ -27,7 +33,7 @@ const SenderPage = () => {
                         image={checkstatus}
                         href='/status'
                         header='Delivery Status'
-                        height='auto'
+                        style={style.height}
                     /> 
                 </div>
                 
@@ -36,6 +42,7 @@ const SenderPage = () => {
                         image={batch}
                         href='#'
                         header='Bulk Delivery Request'
+                        style={style.height}
                     />  
                 </div>
             </div>

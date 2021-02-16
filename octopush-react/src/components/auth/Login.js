@@ -58,60 +58,61 @@ const Login = () => {
             
      }
 
-    return ( 
+    return (
+        
+        <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
+            <Grid.Column style={{ maxWidth: 400 }}>
+                <Header as='h2' color='teal' textAlign='center'>
+                    Log-in to your account
+                </Header>
 
-    <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
-         <Grid.Column style={{ maxWidth: 400 }}>
-            <Header as='h2' color='teal' textAlign='center'>
-                Log-in to your account
-            </Header>
+                <Form size='large' onSubmit={onFormSubmit}>
+                    <Segment stacked>
+                        <Container textAlign='left'>
+                            Email
+                        </Container>
+                        <Form.Input 
+                            fluid icon='mail' 
+                            iconPosition='left' 
+                            placeholder='E-mail address'
+                            name='email'
+                            value={loginInput.email}
+                            onChange={onInputChange}
+                        />
 
-            <Form size='large' onSubmit={onFormSubmit}>
-                <Segment stacked>
-                    <Container textAlign='left'>
-                        Email
-                    </Container>
-                    <Form.Input 
-                        fluid icon='mail' 
-                        iconPosition='left' 
-                        placeholder='E-mail address'
-                        name='email'
-                        value={loginInput.email}
-                        onChange={onInputChange}
-                    />
+                        <Container textAlign='left'>
+                            Password
+                        </Container>
+                        <Form.Input
+                            fluid
+                            icon='lock'
+                            iconPosition='left'
+                            placeholder='Password'
+                            type='password'
+                            name='password'
+                            value={loginInput.password}
+                            onChange={onInputChange}
+                        />
 
-                    <Container textAlign='left'>
-                        Password
-                    </Container>
-                    <Form.Input
-                        fluid
-                        icon='lock'
-                        iconPosition='left'
-                        placeholder='Password'
-                        type='password'
-                        name='password'
-                        value={loginInput.password}
-                        onChange={onInputChange}
-                    />
+                        <Container textAlign='left'>
+                            <div className="" style={{ marginBottom:"5%", color:"red" }}>
+                                {message}
+                            </div>             
+                        </Container>
+                
+                        <Button color='teal' fluid size='large'>
+                            Login
+                        </Button>
+                    </Segment>
+                </Form>
 
-                    <Container textAlign='left'>
-                        <div className="" style={{ marginBottom:"5%", color:"red" }}>
-                            {message}
-                        </div>             
-                    </Container>
-            
-                    <Button color='teal' fluid size='large'>
-                        Login
-                    </Button>
-                </Segment>
-            </Form>
-
-            <Message>
-                <Link href='/register'>Sign Up </Link> to join us
-            </Message>
-         </Grid.Column>
-    </Grid>   
+                <Message>
+                    <Link href='/register'>Sign Up </Link> to join us
+                </Message>
+            </Grid.Column>
+        </Grid> 
     )
+    
 }
 
 export default withCookies(withRouter(Login))
