@@ -20,7 +20,6 @@ class DesktopContainer extends Component {
     handleFormSubmission(e) {
         const search = this.state.searchItem
         e.preventDefault()
-        console.log(search)
         axios.post('http://localhost:5000/api/v1/queryDelivery', qs.stringify({
             searchItem: search
 
@@ -113,10 +112,11 @@ class DesktopContainer extends Component {
                                     
                                 }}>
                                     <TextArea onChange={e => {
+                                        e.preventDefault()
                                         this.setState({
                                             searchItem: e.target.value
                                         })
-                                    }} type='text' placeholder='Search with your email address or mobile number' />
+                                    }} type='text' placeholder='Search with your email address or mobile number'  />
                                     <Button marginTop= '10px' basic color='orange' type='submit'
                                     style={{
                                         margin: '10px'
