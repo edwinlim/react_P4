@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { withCookies, useCookies } from 'react-cookie';
 import axios from 'axios'
-import { ItemDescription } from 'semantic-ui-react';
+import { ItemDescription, Container, Button } from 'semantic-ui-react';
 import { Fragment } from 'react';
 import { Map, Marker, Circle, InfoWindow, GoogleApiWrapper, Polygon } from 'google-maps-react';
 import { getApiUrl, postHttpRequest, removeDuplicatesFromList } from "../utility"
@@ -29,7 +29,7 @@ const Admin = (props) => {
         setRequests(response.data.RequestsList)
         setIsLoading(true)
     }
-    const  renderSwitch = (param) => {
+    const renderSwitch = (param) => {
         switch (param) {
             case '0':
                 return 'Request Submitted';
@@ -71,7 +71,17 @@ const Admin = (props) => {
 
     return (
 
-        <>
+
+        <Container>
+            <div>
+                <Button style={{
+                    marginBottom: '10px'
+                }} color='olive'
+                    onClick={e => { axios.get('http://localhost:5000/optimize').then(res=>{console.log(res)}).catch(err=>{console.log(err)})}}
+                >
+                    Optimize
+      </Button>
+            </div >
             <div className="map">
                 <Map
                     google={props.google}
@@ -95,82 +105,83 @@ const Admin = (props) => {
                 </Map>
             </div>
             <table class="ui celled table">
-            <thead>
+                <thead>
 
-                <tr><th>Name</th>
-                    <th>Email</th>
-                    <th>Contact Number</th>
-                    <th>Address</th>
-                    <th>Floor</th>
-                    <th>Item Description</th>
-                    <th>Qty</th>
-                    <th>Instructions</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
+                    <tr><th>Name</th>
+                        <th>Email</th>
+                        <th>Contact Number</th>
+                        <th>Address</th>
+                        <th>Floor</th>
+                        <th>Item Description</th>
+                        <th>Qty</th>
+                        <th>Instructions</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
 
-            <tbody>
-                {isLoading ?
-                    requests.map((item, index) =>
-                        <tr>
-                            {/* make columns according to number of value pair */
+                <tbody>
+                    {isLoading ?
+                        requests.map((item, index) =>
+                            <tr>
+                                {/* make columns according to number of value pair */
 
-                                <React.Fragment>
-                                    <td>
-                                        {item.receiver_name}
-                                    </td>
+                                    <React.Fragment>
+                                        <td>
+                                            {item.receiver_name}
+                                        </td>
 
-                                    <td>
-                                        {item.receiver_email}
-                                    </td>
-                                    <td>
-                                        {item.receiver_contact}
-                                    </td>
-
-
-                                    <td>
-                                        {item.receiver_block_num + ' ' + item.receiver_road_name}
-
-                                    </td>
+                                        <td>
+                                            {item.receiver_email}
+                                        </td>
+                                        <td>
+                                            {item.receiver_contact}
+                                        </td>
 
 
-                                    <td>
-                                        {item.receiver_floor + '-' + item.receiver_unit_number}
-                                    </td>
+                                        <td>
+                                            {item.receiver_block_num + ' ' + item.receiver_road_name}
+
+                                        </td>
 
 
-                                    <td>
-                                        {item.item_description}
-                                    </td>
-
-                                    <td>
-                                        {item.item_qty}
-                                    </td>
-
-                                    <td>
-                                        {item.special_instructions}
-                                    </td>
-
-                                    <td>{renderSwitch(item.status)}</td>
-
-                                    <td>
-                                        <button>Update</button>
-                                    </td>
-                                </React.Fragment>
-
-                            }
+                                        <td>
+                                            {item.receiver_floor + '-' + item.receiver_unit_number}
+                                        </td>
 
 
+                                        <td>
+                                            {item.item_description}
+                                        </td>
 
-                        </tr>)
+                                        <td>
+                                            {item.item_qty}
+                                        </td>
 
-                    : 'No Requests Found'}
+                                        <td>
+                                            {item.special_instructions}
+                                        </td>
 
-            </tbody>
+                                        <td>{renderSwitch(item.status)}</td>
 
-        </table >
-        </>
+                                        <td>
+                                            <button>Update</button>
+                                        </td>
+                                    </React.Fragment>
+
+                                }
+
+
+
+                            </tr>)
+
+                        : 'No Requests Found'}
+
+                </tbody>
+
+            </table >
+
+        </Container >
 
     )
 }
