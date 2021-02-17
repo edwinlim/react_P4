@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { withCookies } from 'react-cookie';
-import jwt from 'jsonwebtoken';
 import apiService from '../services/ApiService';
 import {
     Container,
@@ -30,10 +29,9 @@ import { div } from 'prelude-ls';
 
 const RequestStatus = (cookies) => {
     
-    const token = cookies.allCookies.token
-    const rawJWT = jwt.decode(token)
+    const senderId = cookies.allCookies.token.sender_id
 
-    const [senderId] = useState(rawJWT.id)
+    // const [senderId] = useState(rawJWT.id)
     const [requests, setRequests] = useState([])
     const [isLoading, setIsLoading] = useState(false)
 
@@ -49,8 +47,6 @@ const RequestStatus = (cookies) => {
         
 
     }, [senderId] )
-
-    console.log(requests)
 
     function formatDate(string){
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
