@@ -106,14 +106,18 @@ class Driver extends React.Component {
                 }
                 if (res.status && res.data && res.data.length) {
                     dataToSet['activeBlockData'] = res.data.map(x => {
-                        let newNameToDisplay = x['receiver_block_num']
+                        let newNameToDisplay = "Blk " + x['receiver_block_num']
                         if (x['receiver_road_name']) {
-                            newNameToDisplay += x['receiver_road_name']
+                            newNameToDisplay += " " + x['receiver_road_name']
+                        }
+                        if (x['receiver_floor']) {
+                            newNameToDisplay += " #" + x['receiver_floor']
                         }
                         if (x['receiver_unit_number']) {
-                            newNameToDisplay += x['receiver_unit_number']
+                            newNameToDisplay += "-" + x['receiver_unit_number']
                         }
                         return {
+                            ...x,
                             address: newNameToDisplay,
                             latLng: x['receiver_lat'] + "," + x['receiver_long'],
                             jobId: x['id'],
@@ -193,6 +197,9 @@ class Driver extends React.Component {
         })
         if (result && result['status']) {
             tempOTP = result.otp
+        } else {
+            toastr.error(result['message'])
+            return;
         }
         this.setState({
             type: job.type,
@@ -317,16 +324,18 @@ class Driver extends React.Component {
                             <button onClick={() => this.gobackPhase2()}><Icon name="angle double left" /></button>
                             {this.state.activeBlockData.length > 0 && this.state.activeBlockData.map(x => {
                                 return (
-                                    <Segment className="ui top aligned">{this.state.activeBlockLabel}
-                                        <br />
-                                        {x.address}<br />
-                                        {x.type}<br />
+                                    <Segment className="ui top aligned">
+                                        Ref. ID: #{x.jobId}<br />
+                                        Recipient: {x.receiver_name}<br />
+                                        Address: {x.address}<br />
+                                        Type: {x.type}<br />
+
                                         <>
                                             <Modal
                                                 onClose={() => this.handleStateChange('setOTPModalOpen', true)}
                                                 onOpen={() => this.openPopupForOtp(x)}
                                                 open={this.state.setOTPModalOpen}
-                                                trigger={<Button>Get/Give OTP</Button>}
+                                                trigger={<Button><Icon className="unlock"></Icon>{x.type === "Pickup" ? "Give OTP" : "Get OTP"}</Button>}
                                             >
 
                                                 {this.state.type && this.state.type.match(/delivery/gi) && <Modal.Content>
@@ -350,16 +359,19 @@ class Driver extends React.Component {
                                                     {this.state.type && this.state.type.match(/delivery/gi) && <Button color='blue' onClick={() => this.submitOTP(x)}>
                                                         Submit
         </Button>}
+
                                                 </Modal.Actions>
                                             </Modal>
                                         </><br />
-                                        <a href={`tel:${x.phoneNumber}`}>Call</a><br />
+                                        <a href={`tel:${x.phoneNumber}`}><Button basic color='black'>
+                                            <Icon className="phone"></Icon> Call
+    </Button></a><br />
                                         <>
                                             <Modal
                                                 onClose={() => this.handleStateChange('setOtherActionsModalOpen', false)}
                                                 onOpen={() => this.handleStateChange('setOtherActionsModalOpen', true)}
                                                 open={this.state.setOtherActionsModalOpen}
-                                                trigger={<Button>Unable to deliver</Button>}
+                                                trigger={<Button><Icon className="user cancel"></Icon>Unable to deliver</Button>}
                                             >
                                                 <Modal.Content>
                                                     <Modal.Description>
@@ -381,7 +393,9 @@ class Driver extends React.Component {
                                                         onClick={() => this.submitReason(x)}> Submit </Button>
                                                 </Modal.Actions>
                                             </Modal>
+                                            <br />
                                         </>
+                                        Special Instructions: { x.special_instructions}
                                     </Segment>
                                 )
                             })}
