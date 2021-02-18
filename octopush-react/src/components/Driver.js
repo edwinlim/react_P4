@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid, Icon, Segment, Button, Header, Modal } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css'
-import { getApiUrl, postHttpRequest, removeDuplicatesFromList } from "../utility"
+import { getApiUrl, postHttpRequest } from "../utility"
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 
@@ -33,7 +33,9 @@ class Driver extends React.Component {
             deliveryType: null,
             isLogin: true,
             userData: {
-                user_id: 1
+                //taking the userId from the local storage and converting it to a number type
+                // if its a non primitive data type you have to do JSON.parse()
+                user_id: Number(window.localStorage.getItem("userId"))
             },
             tempTourData: [],
             viewOTPAtDriverEnd: ''
@@ -58,6 +60,8 @@ class Driver extends React.Component {
                     }, () => {
                         this.fetchLatestUserdata()
                     })
+                } else {
+                    toastr.info(res['message'])
                 }
             })
     }
