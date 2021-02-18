@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import jwt from 'jsonwebtoken'
-import { Card, Image } from 'semantic-ui-react';
+import { Card, Image, Grid } from 'semantic-ui-react';
 import { withCookies } from 'react-cookie';
 import driver from './images/driver.jpg';
 import sender from './images/sender.jpg';
-import Admin from './AdminPage';
 
 const Main = (cookies) => {
 
@@ -18,7 +17,7 @@ const Main = (cookies) => {
                 <h1></h1>
             </div>
 
-            <div className="ui center aligned two column equal height stretched grid">
+            {/* <div className="ui center aligned two column equal height stretched grid"> */}
                 {/* {  role === "0" ? ( 
                     <div>
                         <Admin />
@@ -26,12 +25,22 @@ const Main = (cookies) => {
                 ) : ''
                 } */}
 
-                <div className="row">
+                {/* <div className="row"> */}
+                <Grid columns={2}>
                     {role === "1" || role === "3" ? (
                         <div className="eight wide column">
-                            <Card>
-                                <Card.Content>
+                            <Grid.Column>
+                                {/* <Card>
+                                    <Card.Content> */}
                                     <Image
+                                        as= 'a'
+                                        fluid
+                                        label={{
+                                            color: 'blue',
+                                            content: 'Sender',
+                                            icon: 'user outline',
+                                            ribbon: 'true'
+                                        }}
                                         src={sender}
                                         size='extra large'
                                         href='/sender'
@@ -39,19 +48,28 @@ const Main = (cookies) => {
                                                 position: "center"
                                                 }}
                                     />
-                                    <Card.Header>Sender</Card.Header>
-                                </Card.Content>
-                            </Card>
+                                    {/* <Card.Header>Sender</Card.Header> */}
+                                    {/* </Card.Content>
+                                </Card> */}
+                            </Grid.Column>
+                         
                         </div>
                     ) : ''
                     }
 
                     {role === "2" || role === "3" ? (
                         <div className="eight wide column">
-                            <Card>
-                                <Card.Content>
+                            {/* <Card> */}
+                                <Grid.Column>
                                     <Image
+                                        as= 'a'
                                         src={driver}
+                                        label={{
+                                            color: 'red',
+                                            content: 'Driver',
+                                            icon: 'truck',
+                                            ribbon: 'true'
+                                        }}
                                         size='large'
                                         href='/driver'
                                         style={{height: "200px",
@@ -59,13 +77,13 @@ const Main = (cookies) => {
                                                 }}
                                     />
                                     <Card.Header>Driver</Card.Header>
-                                </Card.Content>
-                            </Card>
+                                </Grid.Column>
+                            {/* </Card> */}
 
                         </div>
                     ) : ''}
-                </div>
-            </div >
+                </Grid>
+            {/* </div >  */}
         </div >
 
     )

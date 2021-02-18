@@ -51,7 +51,7 @@ const Request = () => {
             }
         ).then(response => {
             if (response.status === 200 && response.statusText === 'OK') {
-                setCookie('token', response.data, {
+                setCookie('token', response.data.token, {
                     path: '/status',
                     // expires: moment.unix(response.data.expiresAt).toDate()
                 })

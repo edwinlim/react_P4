@@ -19,10 +19,11 @@ const NavBar = () =>{
     // const [cookies, setCookie] = useCookies(['token'])
     const history = useHistory()
 
+
     return (
         <Menu pointing secondary style={{backgroundColor: 'grey'}}>
             <Menu.Item>
-                <Image size='small' src={logo} />
+                <Image size='tiny' src={logo} />
             </Menu.Item>
             <Menu.Menu position='right' >
                 <Menu.Item header href="/login"  >
