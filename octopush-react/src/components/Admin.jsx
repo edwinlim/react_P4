@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { withCookies, useCookies } from 'react-cookie';
 import axios from 'axios'
-import { ItemDescription, Container, Button } from 'semantic-ui-react';
+import { ItemDescription, Container, Button, Message, Modal } from 'semantic-ui-react';
 import { Fragment } from 'react';
 import { Map, Marker, Circle, InfoWindow, GoogleApiWrapper, Polygon } from 'google-maps-react';
 import { getApiUrl, postHttpRequest, removeDuplicatesFromList } from "../utility"
@@ -32,21 +32,21 @@ const Admin = (props) => {
     const renderSwitch = (param) => {
         switch (param) {
             case '0':
-                return 'Request Submitted';
+                return <Message color='teal' size='tiny'>Request Submitted</Message>;
             case '1':
-                return 'Driver Assigned. Ready for pickup';
+                return <Message color='blue' size='tiny'> Driver Assigned for pickup</Message>;
             case '2':
-                return 'Picked Up. On way to wharehouse';
+                return <Message color='orange' size='tiny'>Collected on way to wharehouse</Message>;
             case '3':
-                return 'Received by Wharehouse';
+                return <Message color='teal' size='tiny'>Received by Wharehouse</Message>;
             case '4':
-                return 'Driver Assigned. Ready for delivery.';
+                return <Message color='blue' size='tiny'>Driver Assigned by Wharehouse.</Message>;
             case '5':
-                return 'Delivery on the way';
+                return <Message color='orange' size='tiny'>On the way</Message>;
             case '6':
-                return 'Delivery Completed. ';
+                return <Message color='green' size='tiny'>Delivery Completed. </Message>;
             case '7':
-                return 'Failed Delivery';
+                return <Message color='red' size='tiny'>Failed Delivery</Message>;
             default:
                 return 'Unknown Status';
         }
@@ -77,7 +77,7 @@ const Admin = (props) => {
                 <Button style={{
                     marginBottom: '10px'
                 }} color='olive'
-                    onClick={e => { axios.get('http://localhost:5000/optimize').then(res=>{console.log(res)}).catch(err=>{console.log(err)})}}
+                    onClick={e => { axios.get('http://localhost:5000/optimize').then(res => { console.log(res) }).catch(err => { console.log(err) }) }}
                 >
                     Optimize
       </Button>
@@ -165,8 +165,10 @@ const Admin = (props) => {
                                         <td>{renderSwitch(item.status)}</td>
 
                                         <td>
-                                            <button>Update</button>
+                                            <Button color="orange"> Update</Button>
+                            
                                         </td>
+
                                     </React.Fragment>
 
                                 }

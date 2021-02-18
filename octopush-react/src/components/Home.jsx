@@ -13,7 +13,7 @@ class DesktopContainer extends Component {
         this.state = {
             searchItem: '',
             formErr: '',
-            searchedItem:''
+            searchedItem: ''
 
         }
     }
@@ -47,15 +47,15 @@ class DesktopContainer extends Component {
                 }}>
 
 
-                <Grid 
-                    textAlign='center' 
-                    style={{ height: 'auto', marginTop: '3em' }} 
+                <Grid
+                    textAlign='center'
+                    style={{ height: 'auto', marginTop: '3em' }}
                     verticalAlign='middle'>
-                    <Image 
-                        size='medium' 
+                    <Image
+                        size='medium'
                         src={logo}
-    
-                        />
+
+                    />
                 </Grid>
 
 
@@ -68,7 +68,7 @@ class DesktopContainer extends Component {
                         marginTop: '1em',
                         textAlign: 'center'
                     }}>
-                    
+
                     Octopush
                 </Header>
                 <Header
@@ -89,14 +89,14 @@ class DesktopContainer extends Component {
                                 <p style={{ fontSize: '1.33em' }}>You want to gratify your customers with fast delivery. <br></br>Trust it to Octopush to push it to your customers. <br></br>  </p>
 
 
-                                <Button primary size='huge' href='/login'>
+                                <Button  size='huge'  color= 'orange' href='/login'>
                                     Get Started
                                     <Icon name='right arrow' />
                                 </Button>
 
                             </Grid.Column>
 
-                            
+
 
                             <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
                                 <Header as='h6' style={{
@@ -105,31 +105,34 @@ class DesktopContainer extends Component {
                                 }}>
                                     Tracking
                                 </Header>
-                                < Form 
-                                onSubmit={e=>this.handleFormSubmission(e)}
-                                paddingBottom='20em' style={{
-                                    marginTop: '2px',
-                                    
-                                }}>
+                                < Form
+                                    onSubmit={e => this.handleFormSubmission(e)}
+                                    paddingBottom='20em' style={{
+                                        marginTop: '2px',
+
+                                    }}>
                                     <TextArea onChange={e => {
                                         e.preventDefault()
                                         this.setState({
                                             searchItem: e.target.value
                                         })
-                                    }} type='text' placeholder='Search with your email address or mobile number'  />
-                                    <Button marginTop= '10px' basic color='orange' type='submit'
-                                    style={{
-                                        margin: '10px'
-                                    }} >
+                                    }} type='text' placeholder='Search with your email address or mobile number' />
+                                    <Button marginTop='10px' basic color='orange' type='submit'  size='huge'
+                                        style={{
+                                            margin: '10px'
+                                        }} >
                                         Where is my stuff
                                     </Button>
 
-                        
+
+
+                                    {this.state.searchedItem ? 
                                     <Header as='h3' style={{
                                         color: 'rgba(66, 147, 245)'
-                                    }}> 
-                                        {this.state.searchedItem}
-                                    </Header>
+                                    }}>Status: {this.state.searchedItem}     
+                                     </Header>
+                                     : '' }
+                              
                                 </Form >
 
 
