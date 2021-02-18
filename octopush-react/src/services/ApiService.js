@@ -5,7 +5,7 @@ const baseURL = "http://localhost:5000/api/v1"
 
 const axiosInstance = axios.create({
     baseURL: baseURL,
-    timeout: 1000,
+    timeout: 2000,
 })
 
 const backendAPI = {
@@ -18,6 +18,18 @@ const backendAPI = {
 
     getSenderRequests: (senderId) => {
         return axiosInstance.post(`/getSenderRequests/${senderId}`)
+    },
+
+    batchUpdate: (list, token) => {
+        return axiosInstance.post(
+            '/batchUpdate', 
+            qs.stringify({list}),
+            {
+                headers: {
+                  'auth_token': token
+                }
+            }
+        )
     }
 }
 

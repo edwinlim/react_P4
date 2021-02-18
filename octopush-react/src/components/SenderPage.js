@@ -1,19 +1,30 @@
 import React from 'react';
 // import jwt from 'jsonwebtoken'
 import { Card } from 'semantic-ui-react';
-import { withCookies } from 'react-cookie';
-import requestImg from './images/Request.jpg'
-import checkstatus from './images/checkstatus.jpg'
-import batch from './images/batch.jpg'
+import { withCookies, useCookies } from 'react-cookie';
+import { useHistory } from 'react-router-dom';
+import requestImg from './images/Request.jpg';
+import checkstatus from './images/checkstatus.jpg';
+import batch from './images/batch.jpg';
+
 
 const style = {
     height: {
-        height: "280px",
+        height: "auto",
         position: "center"
     },
   }
 
 const SenderPage = () => {
+
+    const [cookies] = useCookies('cookies')
+    const history = useHistory()
+    console.log(cookies)
+
+    const handleOnClick = () =>{
+        
+        history.push('/status', {cookies})
+    }
 
     return (
         <div className="ui container" style={{ marginTop:"10%" }}>
@@ -30,17 +41,20 @@ const SenderPage = () => {
                     
                 <div className="column">
                     <Card
+                        as='a'
                         image={checkstatus}
-                        href='/status'
+                        // href='/status'
                         header='Delivery Status'
                         style={style.height}
+                        onClick={handleOnClick}
                     /> 
+                    
                 </div>
                 
                 <div className="column">
                     <Card
                         image={batch}
-                        href='#'
+                        href='/batch'
                         header='Bulk Delivery Request'
                         style={style.height}
                     />  
