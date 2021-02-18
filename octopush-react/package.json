@@ -13,6 +13,7 @@
     "qs": "^6.5.2",
     "react": "^17.0.1",
     "react-cookie": "^4.0.3",
+    "react-data-table-component": "^7.0.0-alpha-5",
     "react-dom": "^17.0.1",
     "react-navigation": "^4.4.3",
     "react-router": "^5.2.0",
@@ -20,8 +21,10 @@
     "react-scripts": "4.0.1",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^2.0.3",
+    "styled-components": "^5.2.1",
     "toastr": "^2.1.4",
-    "web-vitals": "^0.2.4"
+    "web-vitals": "^0.2.4",
+    "xlsx": "^0.16.9"
   },
   "scripts": {
     "start": "react-scripts start",

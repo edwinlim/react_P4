@@ -43,8 +43,7 @@ const Register = () => {
 
     const onFormSubmit = (e) => {
         e.preventDefault()
-        console.log(register)
-
+        
         axios.post(
             'http://localhost:5000/api/v1/user/register', 
             qs.stringify({register})

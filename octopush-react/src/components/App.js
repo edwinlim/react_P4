@@ -5,6 +5,7 @@ import SenderPage from './SenderPage';
 import Request from './Request';
 import RequestStatus from './RequestStatus';
 import Driver from './Driver';
+import BatchUpload from './BatchUpload';
 import ProtectedRoute from './ProtectedRoute';
 // import Route from './Route';
 import Main from './Main';
@@ -29,6 +30,8 @@ const App = () => {
                     <ProtectedRoute path='/status' component={RequestStatus} />
 
                     <ProtectedRoute path='/driver' component={Driver} />
+
+                    <Route path="/batch" component={BatchUpload} />
 
                     <Route path="/register">
                         <Register />

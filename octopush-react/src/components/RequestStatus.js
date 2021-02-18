@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { withCookies } from 'react-cookie';
+import { withCookies, useCookies } from 'react-cookie';
 import apiService from '../services/ApiService';
+import jwt from 'jsonwebtoken';
 import {
     Container,
     Header,
@@ -8,6 +9,8 @@ import {
     Item,
     Label,
     Button,
+    Modal,
+    Form,
   } from 'semantic-ui-react'
 import { div } from 'prelude-ls';
 
@@ -29,11 +32,19 @@ import { div } from 'prelude-ls';
 
 const RequestStatus = (cookies) => {
     
-    const senderId = cookies.allCookies.token.sender_id
+    const token = cookies.allCookies.token
+    const rawJWT = jwt.decode(token)
+    const senderId = rawJWT.id
 
-    // const [senderId] = useState(rawJWT.id)
     const [requests, setRequests] = useState([])
     const [isLoading, setIsLoading] = useState(false)
+    const [newAddress, setNewAddress] = useState({
+        houseNumber: '',
+        streetAddress: '',
+        floor: '',
+        unit: '',
+        postcode: '',
+    })
 
     const getData = async (senderId) => {
         const response =  await apiService.getSenderRequests(senderId)
@@ -42,11 +53,17 @@ const RequestStatus = (cookies) => {
         setIsLoading(true)
     }
 
+    const onInputChange = (event) => {     
+        setNewAddress(
+            {...newAddress,
+                [event.target.name]: event.target.value,
+            }
+        )
+    }
+
     useEffect(() =>{       
         getData(senderId)
-        
-
-    }, [senderId] )
+    }, [] )
 
     function formatDate(string){
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -80,49 +97,50 @@ const RequestStatus = (cookies) => {
                                         <Icon name='phone' /><span> {item.receiver_contact}</span><br />
                                         <Icon name='mail' /> {item.receiver_email}<br />
                                         <Icon name='home' /> 
-                                            {item.receiver_block_num} {item.receiver_road_name}, Singapore {item.receiver_poscode}
+                                            {item.receiver_block_num} {item.receiver_road_name}, Singapore {item.receiver_poscode}  
+                                          <br />
                                     </Item.Description>
 
                                     <Item.Description>
                                         <Icon name='info' /> {item.special_instructions}
 
                                         { item.status === '0' ? (
-                                            <Button color='yellow' floated='right'>
+                                            <Button color='yellow' floated='right' size='small'>
                                                 <Icon name='clipboard check' />
                                                 Submitted
                                             </Button>
                                         ) : item.status === '1' ? (
-                                            <Button color='olive' floated='right'>
+                                            <Button color='olive' floated='right' size='small'>
                                                 <Icon name='dolly' />
                                                 Ready to Pickup  
                                             </Button>
                                         ) : item.status === '2' ? (
-                                            <Button color='blue' floated='right'>
+                                            <Button color='blue' floated='right' size='small'>
                                                 <Icon name='thumbs up outline' />
                                                 Picked Up
                                             </Button>
                                         ) : item.status === '3' ? (
-                                            <Button color='brown' floated='right'>
+                                            <Button color='brown' floated='right' size='small'>
                                                 <Icon name='warehouse' />      
                                                 Assigning Driver  
                                             </Button>
                                         ) : item.status === '4' ? (
-                                            <Button color='olive' floated='right'>
+                                            <Button color='olive' floated='right' size='small'>
                                                 <Icon name='truck' />
                                                 Ready to Deliver
                                             </Button>
                                         ) : item.status === '5' ? (
-                                            <Button color='teal' floated='right'>
+                                            <Button color='teal' floated='right' size='small'>
                                                 <Icon name='shipping fast' />
                                                 On Trip
                                             </Button>
                                         ) : item.status === '6' ? (
-                                            <Button color='violet' floated='right'>
+                                            <Button color='violet' floated='right' size='small'>
                                                 <Icon name='thumbs up outline' />
                                                 Delivered
                                             </Button>
                                         ) : item.status === '7' ? (
-                                            <Button color='red' floated='right'>
+                                            <Button color='red' floated='right' size='small'>
                                                 <Icon name='user close' />
                                                 Unsuccessful
                                             </Button>
@@ -139,17 +157,6 @@ const RequestStatus = (cookies) => {
 
             </Container>
         </div>
-        
-
-    //     <div>
-    //         { isLoading ? (requests.map((item, index) =>{
-    //             return (
-    //                 <div key={index} >
-    //                     <h4>{ item.id }</h4>
-    //                 </div>
-    //             )
-    //         })) : 'No Data' }
-    //    </div>
     )
 }
 
