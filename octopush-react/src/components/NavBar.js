@@ -1,7 +1,7 @@
 import React from "react";
 import { Menu, Image, Icon } from "semantic-ui-react";
 import { showToastMessage } from '../utility';
-import { withCookies, useCookies } from 'react-cookie';
+import { withCookies } from 'react-cookie';
 import { useHistory } from 'react-router-dom';
 import logo from './images/octopush.jpg'
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { withCookies, useCookies } from 'react-cookie';
+import { withCookies } from 'react-cookie';
 import apiService from '../services/ApiService';
 import jwt from 'jsonwebtoken';
 import {
@@ -9,8 +9,7 @@ import {
     Item,
     Label,
     Button,
-    Modal,
-    Form,
+    // Modal,
   } from 'semantic-ui-react'
 import { div } from 'prelude-ls';
 
@@ -38,32 +37,23 @@ const RequestStatus = (cookies) => {
 
     const [requests, setRequests] = useState([])
     const [isLoading, setIsLoading] = useState(false)
-    const [newAddress, setNewAddress] = useState({
-        houseNumber: '',
-        streetAddress: '',
-        floor: '',
-        unit: '',
-        postcode: '',
-    })
+    const [message, setMessage] = useState('')
 
     const getData = async (senderId) => {
         const response =  await apiService.getSenderRequests(senderId)
+
+        if (response.status === 500){
+            setMessage('Some errors occurred where retrieving data')
+            return
+        }
 
         setRequests(response.data.request)
         setIsLoading(true)
     }
 
-    const onInputChange = (event) => {     
-        setNewAddress(
-            {...newAddress,
-                [event.target.name]: event.target.value,
-            }
-        )
-    }
-
     useEffect(() =>{       
         getData(senderId)
-    }, [] )
+    }, [senderId] )
 
     function formatDate(string){
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -150,7 +140,7 @@ const RequestStatus = (cookies) => {
                                 </Item.Content>
                             </Item>
                         )
-                    })) : 'No Data' }
+                    })) : `No Data. ${message}` }
 
 
                 </Item.Group>
