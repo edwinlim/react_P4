@@ -193,6 +193,12 @@ class Driver extends React.Component {
     }
 
     openPopupForOtp = async (job) => {
+        if (job.type !== 'Pickup') {
+            if (job.status !== '5') {
+                toastr.info("JOb is NOt Ready to Deliver")
+                return false
+            }
+        }
         let tempOTP = ''
         let result = await postHttpRequest(getApiUrl('otpGenerator', 'api/v1/'), {
             jobId: job.jobId,
@@ -266,7 +272,6 @@ class Driver extends React.Component {
         })
             .then(res => {
                 if (res.status) {
-                    console.log("userdata", res.data)
                     this.setState({ userData: res.data })
                 }
             })
@@ -292,6 +297,19 @@ class Driver extends React.Component {
         }, () => {
             this.openActiveCluster(this.state.activeClusterObj)
         })
+    }
+
+    readyToDeliver = (jobID) => {
+        console.log(jobID)
+        postHttpRequest(getApiUrl('incrementStatus', 'api/v1/'), {
+            jobID: jobID
+        })
+            .then(res => {
+                if (res.status) {
+                    toastr.success("Item is Ready To Deliver Now")
+                    this.getLatestJobs()
+                }
+            })
     }
 
     render() {
@@ -403,6 +421,9 @@ class Driver extends React.Component {
                                                         </Modal.Actions>
                                                     </Modal>
                                                     <br />
+                                                    {x.status === '4' &&
+                                                        <Button floated="right" basic color='green' onClick={() => this.readyToDeliver(x.id)}>Ready To Deliver</Button>
+                                                    }
                                                 </>
                                             </div>
                                         </Segment>

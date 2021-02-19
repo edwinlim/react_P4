@@ -1,8 +1,9 @@
 import axios from "axios";
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
+require('dotenv').config()
 
-const BACKEND_HOST = "http://localhost:5000/"
+const BACKEND_HOST = process.env.BACKEND_HOST
 
 const axiosInstance = axios.create({
     baseURL: BACKEND_HOST,

@@ -1,7 +1,8 @@
 import axios from 'axios';
 import qs from 'qs';
+require('dotenv').config()
 
-const baseURL = "http://localhost:5000/api/v1"
+const baseURL = process.env.BACKEND_HOST + "api/v1"
 
 const axiosInstance = axios.create({
     baseURL: baseURL,
@@ -22,11 +23,11 @@ const backendAPI = {
 
     batchUpdate: (list, token) => {
         return axiosInstance.post(
-            '/batchUpdate', 
-            qs.stringify({list}),
+            '/batchUpdate',
+            qs.stringify({ list }),
             {
                 headers: {
-                  'auth_token': token
+                    'auth_token': token
                 }
             }
         )
