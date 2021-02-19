@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid, Icon, Segment, Button, Header, Modal } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css'
-import { getApiUrl, postHttpRequest, removeDuplicatesFromList } from "../utility"
+import { getApiUrl, postHttpRequest } from "../utility"
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 
@@ -33,7 +33,9 @@ class Driver extends React.Component {
             deliveryType: null,
             isLogin: true,
             userData: {
-                user_id: 1
+                //taking the userId from the local storage and converting it to a number type
+                // if its a non primitive data type you have to do JSON.parse()
+                user_id: Number(window.localStorage.getItem("userId"))
             },
             tempTourData: [],
             viewOTPAtDriverEnd: ''
@@ -58,6 +60,8 @@ class Driver extends React.Component {
                     }, () => {
                         this.fetchLatestUserdata()
                     })
+                } else {
+                    toastr.info(res['message'])
                 }
             })
     }
@@ -324,79 +328,87 @@ class Driver extends React.Component {
                             <button onClick={() => this.gobackPhase2()}><Icon name="angle double left" /></button>
                             {this.state.activeBlockData.length > 0 && this.state.activeBlockData.map(x => {
                                 return (
-                                    <Segment className="ui top aligned">
-                                        Ref. ID: #{x.jobId}<br />
-                                        Recipient: {x.receiver_name}<br />
+                                    <Segment.Group horizontal>
+                                        <Segment>Ref. ID: #{x.jobId}<br />
+
+                                            Recipient: {x.receiver_name}<br />
                                         Address: {x.address}<br />
-                                        Type: {x.type}<br />
+                                        Special Instructions: {x.special_instructions}
+                                        </Segment>
+                                        <Segment>
+                                            <div>
+                                                <Button floated="right" basic color='olive'>{x.type}</Button><br />
 
-                                        <>
-                                            <Modal
-                                                onClose={() => this.handleStateChange('setOTPModalOpen', true)}
-                                                onOpen={() => this.openPopupForOtp(x)}
-                                                open={this.state.setOTPModalOpen}
-                                                trigger={<Button><Icon className="unlock"></Icon>{x.type === "Pickup" ? "Give OTP" : "Get OTP"}</Button>}
-                                            >
 
-                                                {this.state.type && this.state.type.match(/delivery/gi) && <Modal.Content>
-                                                    <Modal.Description>
-                                                        <Header>Enter OTP To Continue</Header>
-                                                        <input type='tel' minLength="4" maxLength="4" value={this.state.otp} onChange={(e) => this.handleStateChange(e.target.name, e.target.value)} required name="otp" />
-                                                    </Modal.Description>
-                                                </Modal.Content>}
+                                                <>
+                                                    <Modal
+                                                        onClose={() => this.handleStateChange('setOTPModalOpen', true)}
+                                                        onOpen={() => this.openPopupForOtp(x)}
+                                                        open={this.state.setOTPModalOpen}
+                                                        trigger={<Button floated="right"><Icon className="unlock"></Icon>{x.type === "Pickup" ? "Give OTP" : "Get OTP"}</Button>}
+                                                    >
 
-                                                {this.state.type && this.state.type.match(/pickup/gi) && <Modal.Content>
-                                                    <Modal.Description>
-                                                        <Header>OTP</Header>
-                                                        <div>Pickup OTP: {this.state.viewOTPAtDriverEnd}</div>
-                                                    </Modal.Description>
-                                                </Modal.Content>}
+                                                        {this.state.type && this.state.type.match(/delivery/gi) && <Modal.Content>
+                                                            <Modal.Description>
+                                                                <Header>Enter OTP To Continue</Header>
+                                                                <input type='tel' minLength="4" maxLength="4" value={this.state.otp} onChange={(e) => this.handleStateChange(e.target.name, e.target.value)} required name="otp" />
+                                                            </Modal.Description>
+                                                        </Modal.Content>}
 
-                                                <Modal.Actions>
-                                                    <Button color='red' onClick={() => this.handleStateChange('setOTPModalOpen', false)}>
-                                                        cancel
+                                                        {this.state.type && this.state.type.match(/pickup/gi) && <Modal.Content>
+                                                            <Modal.Description>
+                                                                <Header>OTP</Header>
+                                                                <div>Pickup OTP: {this.state.viewOTPAtDriverEnd}</div>
+                                                            </Modal.Description>
+                                                        </Modal.Content>}
+
+                                                        <Modal.Actions>
+                                                            <Button color='red' onClick={() => this.handleStateChange('setOTPModalOpen', false)}>
+                                                                cancel
         </Button>
-                                                    {this.state.type && this.state.type.match(/delivery/gi) && <Button color='blue' onClick={() => this.submitOTP(x)}>
-                                                        Submit
+                                                            {this.state.type && this.state.type.match(/delivery/gi) && <Button color='blue' onClick={() => this.submitOTP(x)}>
+                                                                Submit
         </Button>}
 
-                                                </Modal.Actions>
-                                            </Modal>
-                                        </><br />
-                                        <a href={`tel:${x.phoneNumber}`}><Button basic color='black'>
-                                            <Icon className="phone"></Icon> Call
+                                                        </Modal.Actions>
+                                                    </Modal>
+                                                </><br />
+                                                <a href={`tel:${x.phoneNumber}`}><Button floated="right" basic color='black'>
+                                                    <Icon className="phone"></Icon> Call
     </Button></a><br />
-                                        <>
-                                            <Modal
-                                                onClose={() => this.handleStateChange('setOtherActionsModalOpen', false)}
-                                                onOpen={() => this.handleStateChange('setOtherActionsModalOpen', true)}
-                                                open={this.state.setOtherActionsModalOpen}
-                                                trigger={<Button><Icon className="user cancel"></Icon>Unable to deliver</Button>}
-                                            >
-                                                <Modal.Content>
-                                                    <Modal.Description>
-                                                        {this.state.notActionReasons.map(x => {
-                                                            return (
-                                                                <>
-                                                                    <input type='radio' name='reason' value={x.label} onChange={(e) => this.handleStateChange(e.target.name, x.label)} /> {x.label} <br />
-                                                                </>
-                                                            )
-                                                        })}
-                                                    </Modal.Description>
-                                                </Modal.Content>
-                                                <Modal.Actions>
-                                                    <Button color='red' onClick={() => this.handleStateChange('setOtherActionsModalOpen', false)}>
-                                                        Cancel
+                                                <>
+                                                    <Modal
+                                                        onClose={() => this.handleStateChange('setOtherActionsModalOpen', false)}
+                                                        onOpen={() => this.handleStateChange('setOtherActionsModalOpen', true)}
+                                                        open={this.state.setOtherActionsModalOpen}
+                                                        trigger={<Button floated="right"><Icon className="user cancel"></Icon>Unable to deliver</Button>}
+                                                    >
+                                                        <Modal.Content>
+                                                            <Modal.Description>
+                                                                {this.state.notActionReasons.map(x => {
+                                                                    return (
+                                                                        <>
+                                                                            <input type='radio' name='reason' value={x.label} onChange={(e) => this.handleStateChange(e.target.name, x.label)} /> {x.label} <br />
+                                                                        </>
+                                                                    )
+                                                                })}
+                                                            </Modal.Description>
+                                                        </Modal.Content>
+                                                        <Modal.Actions>
+                                                            <Button color='red' onClick={() => this.handleStateChange('setOtherActionsModalOpen', false)}>
+                                                                Cancel
         </Button>
-                                                    <Button
-                                                        color='blue'
-                                                        onClick={() => this.submitReason(x)}> Submit </Button>
-                                                </Modal.Actions>
-                                            </Modal>
-                                            <br />
-                                        </>
-                                        Special Instructions: { x.special_instructions}
-                                    </Segment>
+                                                            <Button color='blue'
+                                                                onClick={() => this.submitReason(x)}> Submit </Button>
+                                                        </Modal.Actions>
+                                                    </Modal>
+                                                    <br />
+                                                </>
+                                            </div>
+                                        </Segment>
+
+
+                                    </Segment.Group>
                                 )
                             })}
                         </>

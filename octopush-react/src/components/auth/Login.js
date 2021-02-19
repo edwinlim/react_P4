@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import {withCookies, useCookies } from 'react-cookie';
+import { withCookies, useCookies } from 'react-cookie';
 import { useHistory, withRouter } from 'react-router-dom';
 import { showToastMessage } from '../../utility';
 import Link from '../Link';
 import apiService from '../../services/ApiService';
-import {Grid, Header, Form, Segment, Container, Button, Message} from 'semantic-ui-react'
+import { Grid, Header, Form, Segment, Container, Button, Message } from 'semantic-ui-react'
 
 
 const Login = () => {
@@ -19,15 +19,17 @@ const Login = () => {
     const history = useHistory()
 
     const onInputChange = (event) => {
-        setLoginInput({...loginInput, 
-            [event.target.name]: event.target.value,})
+        setLoginInput({
+            ...loginInput,
+            [event.target.name]: event.target.value,
+        })
     }
 
-     const onFormSubmit = (e) => {
+    const onFormSubmit = (e) => {
         e.preventDefault()
 
-         // Verify email and password is not null
-         if (loginInput.email === "" || loginInput.password === "") {
+        // Verify email and password is not null
+        if (loginInput.email === "" || loginInput.password === "") {
             setMessage("Email and Password must not be empty")
             return
         }
@@ -35,13 +37,13 @@ const Login = () => {
         //Make backend api call to check user account
         apiService.login(loginInput)
             .then(response => {
-              
-                if (!response.data.success){
+
+                if (!response.data.success) {
                     setMessage(response.data.message)
                     return
                 }
-                
-                if (response.status === 200 && response.statusText === 'OK'){
+
+                if (response.data.success) {
 
                     const userData = response.data.userDetails
                     localStorage.setItem('userData', JSON.stringify(userData))
@@ -51,19 +53,33 @@ const Login = () => {
                         // expires: moment.unix(response.data.expiresAt).toDate()
                     })
 
+
                     showToastMessage("success", "Login Successfully")
                     history.push('/')
                     // history.push('/', {cookies})
  
+
+                    //set userId off the login user in local storage
+                    //local storage always store items in string type 
+
+                    //primitive data types are string, boolean, date, text, varchar, Number
+                    // non primitive data types are complex obj like object, JSON, array
+
+                    //so if we want to store non primitive data types in localstorage we have to pass that variable or wrap it into JSON.stringify()
+                    window.localStorage.setItem("userId", response['data']['userDetails']['id'])
+                    //showToastMessage("success", "Login Successfully")
+                    //history.push('/', { cookies })
+
+
                 }
-                
+
             })
-        
-            
-     }
+
+
+    }
 
     return (
-        
+
         <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
             <Grid.Column style={{ maxWidth: 400 }}>
                 <Header as='h2' color='teal' textAlign='center'>
@@ -75,9 +91,9 @@ const Login = () => {
                         <Container textAlign='left'>
                             Email
                         </Container>
-                        <Form.Input 
-                            fluid icon='mail' 
-                            iconPosition='left' 
+                        <Form.Input
+                            fluid icon='mail'
+                            iconPosition='left'
                             placeholder='E-mail address'
                             name='email'
                             value={loginInput.email}
@@ -99,11 +115,11 @@ const Login = () => {
                         />
 
                         <Container textAlign='left'>
-                            <div className="" style={{ marginBottom:"5%", color:"red" }}>
+                            <div className="" style={{ marginBottom: "5%", color: "red" }}>
                                 {message}
-                            </div>             
+                            </div>
                         </Container>
-                
+
                         <Button color='teal' fluid size='large'>
                             Login
                         </Button>
@@ -114,9 +130,9 @@ const Login = () => {
                     <Link href='/register'>Sign Up </Link> to join us
                 </Message>
             </Grid.Column>
-        </Grid> 
+        </Grid>
     )
-    
+
 }
 
 export default withCookies(withRouter(Login))
