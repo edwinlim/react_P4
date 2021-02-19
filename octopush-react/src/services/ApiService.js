@@ -31,6 +31,12 @@ const backendAPI = {
                 }
             }
         )
+    },
+
+    validatePickupCode: (otpInput) => {
+        console.log(otpInput)
+        return axiosInstance.post('/otpValidtor', qs.stringify(otpInput))
+        
     }
 }
 
