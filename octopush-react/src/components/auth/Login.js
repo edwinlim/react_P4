@@ -14,10 +14,9 @@ const Login = () => {
     })
 
     const [cookies, setCookie] = useCookies(['token'])
+    const [message, setMessage] = useState('')
 
     const history = useHistory()
-
-    const [message, setMessage] = useState('')
 
     const onInputChange = (event) => {
         setLoginInput({...loginInput, 
@@ -44,12 +43,17 @@ const Login = () => {
                 
                 if (response.status === 200 && response.statusText === 'OK'){
 
-                    setCookie('token', response.data.token, {
+                    const userData = response.data.userDetails
+                    localStorage.setItem('userData', JSON.stringify(userData))
+
+                    setCookie('token', response.data.token, response.data, {
                         path: '/',
                         // expires: moment.unix(response.data.expiresAt).toDate()
                     })
+
                     showToastMessage("success", "Login Successfully")
-                   history.push('/', {cookies})
+                    history.push('/')
+                    // history.push('/', {cookies})
  
                 }
                 
