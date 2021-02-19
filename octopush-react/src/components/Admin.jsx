@@ -5,6 +5,8 @@ import { ItemDescription, Container, Button, Message, Modal } from 'semantic-ui-
 import { Fragment } from 'react';
 import { Map, Marker, Circle, InfoWindow, GoogleApiWrapper, Polygon } from 'google-maps-react';
 import { getApiUrl, postHttpRequest, removeDuplicatesFromList } from "../utility"
+import toastr from 'toastr';
+import 'toastr/build/toastr.min.css';
 require('dotenv').config()
 
 const Admin = (props) => {
@@ -69,6 +71,22 @@ const Admin = (props) => {
 
     console.log(clusterMapData)
 
+    const update2to3 = (params) => {
+        console.log(params)
+        if (params.status === '2') {
+            postHttpRequest(getApiUrl('incrementStatus', 'api/v1/'), {
+                jobID: params.id
+            })
+                .then(res => {
+                    if (res.status) {
+                        toastr.success("Item Status Marked to 3")
+                        getRequest()
+                        getAdminClusterMapData()
+                    }
+                })
+        }
+    }
+
     return (
 
 
@@ -107,7 +125,9 @@ const Admin = (props) => {
             <table class="ui celled table">
                 <thead>
 
-                    <tr><th>Name</th>
+                    <tr>
+                        <th>Job ID</th>
+                        <th>Name</th>
                         <th>Email</th>
                         <th>Contact Number</th>
                         <th>Address</th>
@@ -116,6 +136,7 @@ const Admin = (props) => {
                         <th>Qty</th>
                         <th>Instructions</th>
                         <th>Status</th>
+                        <th>Upgrade</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -127,6 +148,7 @@ const Admin = (props) => {
                                 {/* make columns according to number of value pair */
 
                                     <React.Fragment>
+                                        <td>{item.id}</td>
                                         <td>
                                             {item.receiver_name}
                                         </td>
@@ -163,7 +185,7 @@ const Admin = (props) => {
                                         </td>
 
                                         <td>{renderSwitch(item.status)}</td>
-
+                                        <td><span onClick={() => update2to3(item)}>Mark</span></td>
                                         <td>
                                             <Button color="orange"> Update</Button>
 
