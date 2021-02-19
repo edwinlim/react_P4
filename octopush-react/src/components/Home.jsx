@@ -17,10 +17,13 @@ class DesktopContainer extends Component {
 
         }
     }
+
     handleFormSubmission(e) {
+        const baseURL = process.env.REACT_APP_BACKEND_HOST
+
         const search = this.state.searchItem
         e.preventDefault()
-        axios.post(process.env.BACKEND_HOST + 'api/v1/queryDelivery', qs.stringify({
+        axios.post(baseURL + 'api/v1/queryDelivery', qs.stringify({
             searchItem: search
 
         }))

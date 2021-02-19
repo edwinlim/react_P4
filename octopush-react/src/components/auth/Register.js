@@ -46,9 +46,10 @@ const Register = () => {
 
     const onFormSubmit = (e) => {
         e.preventDefault()
+        const baseURL = process.env.REACT_APP_BACKEND_HOST
 
         axios.post(
-            process.env.BACKEND_HOST + 'api/v1/user/register',
+            baseURL + 'api/v1/user/register',
             qs.stringify({ register })
         )
             .then(response => {

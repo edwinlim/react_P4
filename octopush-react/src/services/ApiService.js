@@ -2,7 +2,7 @@ import axios from 'axios';
 import qs from 'qs';
 require('dotenv').config()
 
-const baseURL = process.env.BACKEND_HOST + "api/v1"
+const baseURL = process.env.REACT_APP_BACKEND_HOST + "api/v1"
 
 const axiosInstance = axios.create({
     baseURL: baseURL,
