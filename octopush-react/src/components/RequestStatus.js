@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { withCookies } from 'react-cookie';
 import apiService from '../services/ApiService';
 import jwt from 'jsonwebtoken';
+import { showToastMessage } from '../utility';
 import {
     Container,
     Header,
@@ -9,7 +10,8 @@ import {
     Item,
     Label,
     Button,
-    // Modal,
+    Modal,
+    Form,
   } from 'semantic-ui-react'
 import { div } from 'prelude-ls';
 
@@ -31,13 +33,19 @@ import { div } from 'prelude-ls';
 
 const RequestStatus = (cookies) => {
     
-    const token = cookies.allCookies.token
-    const rawJWT = jwt.decode(token)
-    const senderId = rawJWT.id
+    const user = JSON.parse(window.localStorage.getItem('userData'))
+    const [senderId] = useState(user.id)
+    console.log(user.id)   
+    // const token = cookies.allCookies.token
+    // const rawJWT = jwt.decode(token)
+    // setSenderId(user.id)
 
+    
     const [requests, setRequests] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [message, setMessage] = useState('')
+    const [modalOpen, setModalOpen] = useState(false)
+    const [otp, setOtp] = useState('')
 
     const getData = async (senderId) => {
         const response =  await apiService.getSenderRequests(senderId)
@@ -51,9 +59,14 @@ const RequestStatus = (cookies) => {
         setIsLoading(true)
     }
 
+    const handleInputChange = (event) => {
+        console.log(otp)
+        setOtp(event.target.value)
+    }
+
     useEffect(() =>{       
         getData(senderId)
-    }, [senderId] )
+    }, [senderId, otp] )
 
     function formatDate(string){
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -61,6 +74,37 @@ const RequestStatus = (cookies) => {
     }
 
     
+
+    const submitOTP =(receiverId) => {
+        console.log(otp.length)
+        if (!otp) {
+            showToastMessage("error", "OTP is Required")
+            return false
+        }
+
+        if (otp.length !== 4) {
+            showToastMessage("error", "OTP should be of length 4")
+            return false
+        }
+
+        // make an api call at bakckend and send otp to verify 
+        apiService.validatePickupCode(
+            {jobId: receiverId, 
+             otp: otp,
+             typeOfCode: 'pickup_code'
+            }
+        ).then(response =>{
+            console.log(response)
+            if (response.data.status === 200) {
+                showToastMessage("success", response.data.message)
+                setModalOpen(false)
+            }else {
+                showToastMessage("error", response.data.message)
+                return
+            }
+        })
+           
+    }
 
     return (
         <div>
@@ -100,10 +144,58 @@ const RequestStatus = (cookies) => {
                                                 Submitted
                                             </Button>
                                         ) : item.status === '1' ? (
-                                            <Button color='olive' floated='right' size='small'>
-                                                <Icon name='dolly' />
-                                                Ready to Pickup  
-                                            </Button>
+                                            <Modal
+                                                onClose={() => setModalOpen(false)}
+                                                onOpen={() => setModalOpen(true)}
+                                                open={modalOpen}
+                                                trigger={<Button>Pickup OTP</Button>}
+                                                size='tiny'
+                                            >
+                                            
+                                                <Modal.Header>Obtain OTP from Driver</Modal.Header>
+
+                                                <Modal.Content>
+                                                    <Modal.Description>
+                                                        <Header>Enter OTP here</Header>
+                                                        <input
+                                                            required
+                                                            type='text' 
+                                                            minLength="4" 
+                                                            name="pickupCode"
+                                                            value={otp} 
+                                                            onChange={handleInputChange} 
+                                                        />
+                                                    </Modal.Description>
+                                                </Modal.Content>
+                                                    
+                                                <Modal.Actions>
+                                                    <Button 
+                                                        color='red' 
+                                                        onClick={() => setModalOpen(false)}>
+                                                        cancel
+                                                    </Button>
+                                                    <Button 
+                                                        color='blue' 
+                                                        onClick={() => submitOTP(item.id)}>
+                                                            Submit
+                                                    </Button>
+                                                </Modal.Actions>
+
+
+                                               
+                                            </Modal>
+                                            
+
+                                                // <Button 
+                                                //     color='olive' 
+                                                //     floated='right' 
+                                                //     size='small'
+                                                //     >
+                                                //     <Icon name='dolly' />
+                                                //     Ready to Pickup  
+                                                // </Button> 
+
+                                              
                                         ) : item.status === '2' ? (
                                             <Button color='blue' floated='right' size='small'>
                                                 <Icon name='thumbs up outline' />
