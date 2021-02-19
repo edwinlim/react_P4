@@ -4,7 +4,7 @@ import axios from 'axios'
 import qs from 'qs'
 import Link from './Link';
 import logo from './images/biglogo.jpg'
-
+require('dotenv').config()
 
 class DesktopContainer extends Component {
 
@@ -20,7 +20,7 @@ class DesktopContainer extends Component {
     handleFormSubmission(e) {
         const search = this.state.searchItem
         e.preventDefault()
-        axios.post('http://localhost:5000/api/v1/queryDelivery', qs.stringify({
+        axios.post(process.env.BACKEND_HOST + 'api/v1/queryDelivery', qs.stringify({
             searchItem: search
 
         }))
@@ -89,7 +89,7 @@ class DesktopContainer extends Component {
                                 <p style={{ fontSize: '1.33em' }}>You want to gratify your customers with fast delivery. <br></br>Trust it to Octopush to push it to your customers. <br></br>  </p>
 
 
-                                <Button  size='huge'  color= 'orange' href='/login'>
+                                <Button size='huge' color='orange' href='/login'>
                                     Get Started
                                     <Icon name='right arrow' />
                                 </Button>
@@ -117,7 +117,7 @@ class DesktopContainer extends Component {
                                             searchItem: e.target.value
                                         })
                                     }} type='text' placeholder='Search with your email address or mobile number' />
-                                    <Button marginTop='10px' basic color='orange' type='submit'  size='huge'
+                                    <Button marginTop='10px' basic color='orange' type='submit' size='huge'
                                         style={{
                                             margin: '10px'
                                         }} >
@@ -126,13 +126,13 @@ class DesktopContainer extends Component {
 
 
 
-                                    {this.state.searchedItem ? 
-                                    <Header as='h3' style={{
-                                        color: 'rgba(66, 147, 245)'
-                                    }}>Status: {this.state.searchedItem}     
-                                     </Header>
-                                     : '' }
-                              
+                                    {this.state.searchedItem ?
+                                        <Header as='h3' style={{
+                                            color: 'rgba(66, 147, 245)'
+                                        }}>Status: {this.state.searchedItem}
+                                        </Header>
+                                        : ''}
+
                                 </Form >
 
 
