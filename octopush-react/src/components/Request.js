@@ -43,9 +43,10 @@ const Request = () => {
     const onFormSubmit = (e) => {
         e.preventDefault()
         const token = cookies.token
+        const baseURL = process.env.REACT_APP_BACKEND_HOST
 
         axios.post(
-            process.env.BACKEND_HOST + 'api/v1/newrequest',
+            baseURL + 'api/v1/newrequest',
             qs.stringify({ requestForm }),
             {
                 headers: {

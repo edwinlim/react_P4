@@ -3,10 +3,10 @@ import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 require('dotenv').config()
 
-const BACKEND_HOST = process.env.BACKEND_HOST
+const baseURL = process.env.REACT_APP_BACKEND_HOST
 
 const axiosInstance = axios.create({
-    baseURL: BACKEND_HOST,
+    baseURL: baseURL,
     timeout: 10000,  // 5seconds
 })
 

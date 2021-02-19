@@ -7,6 +7,7 @@ import apiService from '../../services/ApiService';
 import { Grid, Header, Form, Segment, Container, Button, Message } from 'semantic-ui-react'
 
 
+
 const Login = () => {
     const [loginInput, setLoginInput] = useState({
         email: "",
@@ -57,7 +58,7 @@ const Login = () => {
                     showToastMessage("success", "Login Successfully")
                     history.push('/')
                     // history.push('/', {cookies})
- 
+
 
                     //set userId off the login user in local storage
                     //local storage always store items in string type 

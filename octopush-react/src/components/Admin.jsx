@@ -9,7 +9,7 @@ require('dotenv').config()
 
 const Admin = (props) => {
 
-
+    const baseURL = process.env.REACT_APP_BACKEND_HOST
     const [requests, setRequests] = useState([])
     const [isLoading, setIsLoading] = useState(false)
 
@@ -24,7 +24,7 @@ const Admin = (props) => {
 
     const getRequest = async () => {
         const response = await axios
-            .get(process.env.BACKEND_HOST + 'api/v1/getRequest')
+            .get(baseURL + 'api/v1/getRequest')
 
         setRequests(response.data.RequestsList)
         setIsLoading(true)
@@ -77,7 +77,7 @@ const Admin = (props) => {
                 <Button style={{
                     marginBottom: '10px'
                 }} color='olive'
-                    onClick={e => { axios.get(process.env.BACKEND_HOST + 'optimize').then(res => { console.log(res) }).catch(err => { console.log(err) }) }}
+                    onClick={e => { axios.get(baseURL + 'api/v1/optimize').then(res => { console.log(res) }).catch(err => { console.log(err) }) }}
                 >
                     Optimize
       </Button>
