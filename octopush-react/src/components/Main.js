@@ -1,22 +1,34 @@
 import React, { useState } from 'react';
-import jwt from 'jsonwebtoken'
+// import jwt from 'jsonwebtoken'
 import { Card, Image, Grid } from 'semantic-ui-react';
 import { withCookies } from 'react-cookie';
 import driver from './images/driver.jpg';
 import sender from './images/sender.jpg';
 
-const Main = (cookies) => {
+const Main = () => {
+    const user = JSON.parse(window.localStorage.getItem('userData'))
+    const [role] = useState(user.user_roles)
+    const [name] = useState(user.first_name)
 
-    const token = cookies.allCookies.token
-    const rawJWT = jwt.decode(token)
-    const [role] = useState(rawJWT.role)
+    
+    // const token = cookies.allCookies.token
+    // const rawJWT = jwt.decode(token)
+    
+    // const [role] = useState(rawJWT.role)
+    // const [name] = useState(rawJWT.name)
+
+    // const [role] = useState('2')
 
     return (
-        <div className="ui container center" style={{ marginTop:"10%" }}>
-            <div className="ui header row">
-                <h1></h1>
-            </div>
+        <div>
+        <div className="ui right aligned container" style={{ marginTop:"5%" }}>
+            <h4 class="ui icon header">
+                <i class="circular user icon"></i>
+                {name}
+            </h4>
+        </div>
 
+        <div className="ui container center" style={{ marginTop:"10%" }}>
             {/* <div className="ui center aligned two column equal height stretched grid"> */}
                 {/* {  role === "0" ? ( 
                     <div>
@@ -26,7 +38,9 @@ const Main = (cookies) => {
                 } */}
 
                 {/* <div className="row"> */}
-                <Grid columns={2}>
+                {/* <Grid columns={2}> */}
+
+                <Grid>
                     {role === "1" || role === "3" ? (
                         <div className="eight wide column">
                             <Grid.Column>
@@ -85,7 +99,7 @@ const Main = (cookies) => {
                 </Grid>
             {/* </div >  */}
         </div >
-
+    </div>
     )
 }
 

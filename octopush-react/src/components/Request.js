@@ -3,7 +3,7 @@ import { withCookies, useCookies } from 'react-cookie';
 import axios from 'axios';
 import qs from 'qs';
 import { useHistory } from 'react-router-dom';
-import { Grid, Header, Form, Segment, Container, Button, Message } from 'semantic-ui-react'
+import { Grid, Header, Form, Segment, Button, Message } from 'semantic-ui-react'
 require('dotenv').config()
 
 const Request = () => {
@@ -25,6 +25,7 @@ const Request = () => {
     })
     const [results, setResults] = useState({})
     const [cookies, setCookie] = useCookies(['token'])
+    const [message, setMessage] = useState('')
     const history = useHistory()
 
 
@@ -59,7 +60,11 @@ const Request = () => {
                 })
 
                 history.push('/status', { cookies })
+            } else {
+                setMessage("Some error occurred where creating Request Delivery")
             }
+        }).catch(error => {
+            setMessage('Unexpected error occurred.')
         })
 
     }
@@ -255,9 +260,17 @@ const Request = () => {
                         </div>
                     </Segment>
 
+
+                    {message !== '' && (
+                        <Message negative>
+                            <Message.Header>{message}</Message.Header>
+                        </Message>
+                    )}
+
+
                     <Button color='teal' fluid size='large'>
                         Submit Request
-                </Button>
+                                       </Button>
 
                 </Form>
 

@@ -14,10 +14,9 @@ const Login = () => {
     })
 
     const [cookies, setCookie] = useCookies(['token'])
+    const [message, setMessage] = useState('')
 
     const history = useHistory()
-
-    const [message, setMessage] = useState('')
 
     const onInputChange = (event) => {
         setLoginInput({
@@ -46,10 +45,20 @@ const Login = () => {
 
                 if (response.data.success) {
 
-                    setCookie('token', response.data.token, {
+                    const userData = response.data.userDetails
+                    localStorage.setItem('userData', JSON.stringify(userData))
+
+                    setCookie('token', response.data.token, response.data, {
                         path: '/',
                         // expires: moment.unix(response.data.expiresAt).toDate()
                     })
+
+
+                    showToastMessage("success", "Login Successfully")
+                    history.push('/')
+                    // history.push('/', {cookies})
+ 
+
                     //set userId off the login user in local storage
                     //local storage always store items in string type 
 
@@ -58,8 +67,9 @@ const Login = () => {
 
                     //so if we want to store non primitive data types in localstorage we have to pass that variable or wrap it into JSON.stringify()
                     window.localStorage.setItem("userId", response['data']['userDetails']['id'])
-                    showToastMessage("success", "Login Successfully")
-                    history.push('/', { cookies })
+                    //showToastMessage("success", "Login Successfully")
+                    //history.push('/', { cookies })
+
 
                 }
 

@@ -31,6 +31,7 @@ const Register = () => {
 
     const [results, setResults] = useState({})
     const [cookies, setCookie] = useCookies([])
+    const [message, setMessage] = useState('')
     const history = useHistory()
 
     const onInputChange = (event) => {
@@ -51,6 +52,12 @@ const Register = () => {
             qs.stringify({ register })
         )
             .then(response => {
+
+                if (!response.data.success && response.data.status === 400) {
+                    setMessage(response.data.message)
+                    return
+                }
+
                 if (response.status === 200 && response.statusText === 'OK') {
                     setCookie('token', response.data.token, {
                         path: '/login',
@@ -58,6 +65,8 @@ const Register = () => {
                     })
 
                     history.push('/login', { cookies })
+                } else {
+                    setMessage('Unexpected error occurred ')
                 }
             })
 
@@ -366,16 +375,27 @@ const Register = () => {
                             </div>
                         </div>
 
+
                     </Segment>
+
+
+
+                    {
+                        message !== '' && (
+                            <Message negative>
+                                <Message.Header>{message}</Message.Header>
+                            </Message>
+                        )
+                    }
 
                     {/* <button type="submit" className="ui fluid large teal button" tabIndex="0">Sign Up</button> */}
                     <Button color='teal' fluid size='large'>
                         Sign Up
                 </Button>
 
-                </Form>
-            </Grid.Column>
-        </Grid>
+                </Form >
+            </Grid.Column >
+        </Grid >
 
     );
 

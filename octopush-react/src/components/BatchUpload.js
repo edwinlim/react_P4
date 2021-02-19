@@ -44,7 +44,7 @@ const BatchUpload = () => {
         for (let i = 1; i < dataStringLines.length; i++) {
             const row = dataStringLines[i].split(/,(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/)
 
-            if (headers && row.length == headers.length) {
+            if (headers && row.length === headers.length) {
                 const obj = {}
 
                 for (let j = 0; j < headers.length; j++) {
@@ -139,6 +139,10 @@ const BatchUpload = () => {
                     accept=".csv,.xlsx,.xls"
                     onChange={handleFileUpload}
                 />
+
+                <div className="ui center aligned">
+                    <p style={{color: 'red'}}>{message}</p>
+                </div>
 
                 <button 
                     className="ui right floated positive button"
